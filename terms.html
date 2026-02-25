@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - Geos LLC</title>
+    <meta name="description" content="Terms of Service for Geos LLC products and services.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0b; --bg-secondary: #111113; --bg-card: #18181b;
+            --text-primary: #fafafa; --text-secondary: #a1a1aa;
+            --accent: #6b7280; --accent-light: #9ca3af; --accent-hover: #d1d5db;
+            --border: #27272a; --blue: #3b82f6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.7; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 10, 11, 0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; max-width: 1200px; margin: 0 auto; }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-img { height: 40px; width: auto; }
+        .logo-text { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--text-primary); letter-spacing: 0.15em; }
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: all 0.2s; display: inline-block; }
+        .nav-links a:hover, .nav-links a.active { color: #60a5fa; transform: translateY(-2px); }
+        .mobile-menu { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; }
+        .mobile-menu span { width: 24px; height: 2px; background: var(--text-primary); }
+
+        .page-header { padding: 160px 0 60px; text-align: center; }
+        .page-header h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; margin-bottom: 16px; letter-spacing: -1px; }
+        .page-header p { color: var(--text-secondary); font-size: 1rem; }
+
+        .policy-content { padding: 0 0 100px; }
+        .policy-container { max-width: 800px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 48px; }
+
+        .policy-meta { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+        .policy-meta-item { font-size: 0.9rem; }
+        .policy-meta-item strong { color: var(--accent-light); }
+
+        .policy-section { margin-bottom: 40px; padding: 16px; border-radius: 12px; transition: all 0.3s ease; }
+        .policy-section:hover { background: rgba(59, 130, 246, 0.03); }
+        .policy-section:last-child { margin-bottom: 0; }
+        .policy-section h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; color: var(--text-primary); letter-spacing: -0.5px; transition: color 0.3s; }
+        .policy-section:hover h2 { color: #60a5fa; }
+        .policy-section h3 { font-size: 1.1rem; font-weight: 600; margin: 24px 0 12px; color: var(--text-primary); }
+        .policy-section h4 { font-size: 1rem; font-weight: 600; margin: 20px 0 10px; color: var(--accent-light); }
+        .policy-section p { color: var(--text-secondary); margin-bottom: 16px; }
+        .policy-section ul { color: var(--text-secondary); margin-left: 24px; margin-bottom: 16px; }
+        .policy-section li { margin-bottom: 8px; transition: all 0.2s; }
+        .policy-section li:hover { color: var(--text-primary); transform: translateX(4px); }
+        .policy-section a { color: #60a5fa; text-decoration: none; transition: all 0.2s; }
+        .policy-section a:hover { color: #93c5fd; text-decoration: underline; }
+
+        .highlight-box { background: var(--bg-primary); border-left: 3px solid var(--blue); padding: 16px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .highlight-box p { margin-bottom: 0; }
+
+        footer { padding: 48px 0; border-top: 1px solid var(--border); }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
+        .footer-left { display: flex; flex-direction: column; gap: 8px; }
+        .footer-copyright { color: var(--text-secondary); font-size: 0.9rem; }
+        .footer-links { display: flex; gap: 24px; list-style: none; }
+        .footer-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: all 0.2s; display: inline-block; }
+        .footer-links a:hover { color: #60a5fa; transform: translateY(-2px); }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-primary); flex-direction: column; padding: 24px; gap: 16px; border-bottom: 1px solid var(--border); }
+            .nav-links.active { display: flex; }
+            .mobile-menu { display: flex; }
+            .policy-container { padding: 32px 24px; }
+            .footer-content { flex-direction: column; text-align: center; }
+            .logo-text { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <a href="index.html" class="logo">
+                <img src="logo.png" alt="GEOS Logo" class="logo-img">
+                <span class="logo-text">GEOS</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="privacy.html">Privacy Policy</a></li>
+                <li><a href="sms-policy.html">SMS Policy</a></li>
+                <li><a href="terms.html" class="active">Terms of Service</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+            <div class="mobile-menu" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <div class="container">
+            <h1>Terms of Service</h1>
+            <p>Terms governing access to and use of our services</p>
+        </div>
+    </section>
+
+    <section class="policy-content">
+        <div class="container">
+            <div class="policy-container">
+
+                <div class="policy-meta">
+                    <div class="policy-meta-item"><strong>Effective Date:</strong> February 25, 2026</div>
+                </div>
+
+                <div class="policy-section">
+                    <h2>Introduction</h2>
+                    <p>These Terms of Service ("Terms") govern access to and use of software platforms, applications, and services operated by Geos LLC ("Geos," "Company," "we," "us," or "our"), including but not limited to LeadBridge, ServiceFlow, Callio, Sigcore, and related services (collectively, the "Services").</p>
+                    <div class="highlight-box">
+                        <p>By accessing or using the Services, you agree to be bound by these Terms.</p>
+                    </div>
+                </div>
+
+                <div class="policy-section">
+                    <h2>1. Eligibility</h2>
+                    <p>You must be at least 18 years old and legally capable of entering into a binding agreement to use the Services.</p>
+                    <p>By using the Services, you represent that:</p>
+                    <ul>
+                        <li>You are acting on behalf of a business or organization, or</li>
+                        <li>You are authorized to bind the business you represent.</li>
+                    </ul>
+                </div>
+
+                <div class="policy-section">
+                    <h2>2. Description of Services</h2>
+                    <p>Geos LLC provides software platforms that enable businesses to:</p>
+                    <ul>
+                        <li>Receive and manage customer leads</li>
+                        <li>Send and receive SMS messages</li>
+                        <li>Manage voice communications</li>
+                        <li>Automate operational workflows</li>
+                        <li>Access communication infrastructure services</li>
+                    </ul>
+                    <p>Geos provides infrastructure and software tools but does not act as the end provider of goods or services offered by businesses using the platform.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>3. Account Registration</h2>
+                    <p>To access certain features, you must:</p>
+                    <ul>
+                        <li>Create an account</li>
+                        <li>Provide accurate and complete information</li>
+                        <li>Maintain the security of your login credentials</li>
+                    </ul>
+                    <p>You are responsible for all activity under your account.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>4. Communications & SMS Usage</h2>
+
+                    <h3>A. Platform Notifications</h3>
+                    <p>Geos may send operational SMS notifications related to:</p>
+                    <ul>
+                        <li>Lead alerts</li>
+                        <li>Account updates</li>
+                        <li>System notifications</li>
+                    </ul>
+                    <p>Users may opt out by replying <strong>STOP</strong> or adjusting account settings.</p>
+
+                    <h3>B. Business-to-Customer Messaging</h3>
+                    <p>Certain Services allow businesses to communicate with their own customers via SMS or voice.</p>
+                    <p>Businesses agree that they:</p>
+                    <ul>
+                        <li>Are solely responsible for obtaining proper customer consent before sending messages</li>
+                        <li>Will comply with all applicable telecommunications laws, including TCPA and A2P messaging requirements</li>
+                        <li>Will not send unlawful, unsolicited, or prohibited messages</li>
+                    </ul>
+                    <div class="highlight-box">
+                        <p>Geos acts solely as a technology provider and does not assume responsibility for customer opt-in practices of businesses using the platform.</p>
+                    </div>
+                </div>
+
+                <div class="policy-section">
+                    <h2>5. Prohibited Uses</h2>
+                    <p>You agree not to use the Services to:</p>
+                    <ul>
+                        <li>Send spam or unsolicited messages</li>
+                        <li>Engage in fraud or deceptive practices</li>
+                        <li>Transmit illegal, harmful, or abusive content</li>
+                        <li>Violate telecommunications regulations</li>
+                        <li>Circumvent carrier policies or messaging compliance requirements</li>
+                    </ul>
+                    <p>Geos reserves the right to suspend accounts that violate these Terms.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>6. Compliance With Laws</h2>
+                    <p>Users must comply with:</p>
+                    <ul>
+                        <li>Federal Communications Commission (FCC) regulations</li>
+                        <li>Telephone Consumer Protection Act (TCPA)</li>
+                        <li>A2P 10DLC requirements</li>
+                        <li>Toll-free verification standards</li>
+                        <li>Applicable privacy and data protection laws</li>
+                    </ul>
+                    <p>Failure to comply may result in suspension or termination.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>7. Fees and Payments</h2>
+                    <p>Certain Services require subscription fees or usage-based charges.</p>
+                    <p>Users agree to:</p>
+                    <ul>
+                        <li>Pay all applicable fees</li>
+                        <li>Maintain valid payment information</li>
+                        <li>Authorize recurring billing where applicable</li>
+                    </ul>
+                    <p>All fees are non-refundable unless otherwise stated.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>8. Service Availability</h2>
+                    <p>Geos does not guarantee uninterrupted service. We may:</p>
+                    <ul>
+                        <li>Modify or discontinue features</li>
+                        <li>Perform maintenance</li>
+                        <li>Suspend accounts for compliance reasons</li>
+                    </ul>
+                    <p>We are not liable for carrier filtering, delivery delays, or telecommunications outages.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>9. Limitation of Liability</h2>
+                    <p>To the maximum extent permitted by law, Geos LLC shall not be liable for:</p>
+                    <ul>
+                        <li>Indirect or consequential damages</li>
+                        <li>Lost profits or revenue</li>
+                        <li>Customer disputes between businesses and their clients</li>
+                        <li>Message delivery failures caused by carriers</li>
+                    </ul>
+                    <div class="highlight-box">
+                        <p>Total liability shall not exceed the fees paid in the preceding 3 months.</p>
+                    </div>
+                </div>
+
+                <div class="policy-section">
+                    <h2>10. Indemnification</h2>
+                    <p>You agree to indemnify and hold harmless Geos LLC from any claims arising from:</p>
+                    <ul>
+                        <li>Your use of the Services</li>
+                        <li>Your violation of messaging laws</li>
+                        <li>Failure to obtain proper customer consent</li>
+                        <li>Content you transmit through the platform</li>
+                    </ul>
+                </div>
+
+                <div class="policy-section">
+                    <h2>11. Intellectual Property</h2>
+                    <p>All platform software, branding, and infrastructure remain the property of Geos LLC.</p>
+                    <p>Users retain ownership of their business data and customer information.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>12. Termination</h2>
+                    <p>We may suspend or terminate accounts for:</p>
+                    <ul>
+                        <li>Violation of these Terms</li>
+                        <li>Non-payment</li>
+                        <li>Regulatory risk</li>
+                        <li>Carrier compliance issues</li>
+                    </ul>
+                    <p>You may cancel your account at any time.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>13. Privacy</h2>
+                    <p>Use of the Services is also governed by our <a href="privacy.html">Privacy Policy</a>.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>14. Changes to Terms</h2>
+                    <p>We may update these Terms from time to time. Continued use of the Services constitutes acceptance of updated Terms.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>15. Contact Information</h2>
+                    <p>If you have questions about these Terms of Service, please contact us:</p>
+                    <p>
+                        <strong>Geos LLC</strong><br>
+                        Email: <a href="mailto:support@geos-ai.com">support@geos-ai.com</a><br>
+                        Website: <a href="https://geos-ai.com">geos-ai.com</a>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <a href="index.html" class="logo">
+                        <img src="logo.png" alt="GEOS Logo" class="logo-img">
+                        <span class="logo-text">GEOS</span>
+                    </a>
+                    <p class="footer-copyright">&copy; 2025 Geos LLC. All rights reserved.</p>
+                </div>
+                <ul class="footer-links">
+                    <li><a href="portfolio.html">Portfolio</a></li>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                    <li><a href="sms-policy.html">SMS Policy</a></li>
+                    <li><a href="terms.html">Terms of Service</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script>function toggleMenu() { document.getElementById('navLinks').classList.toggle('active'); }</script>
+</body>
+</html>
