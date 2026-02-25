@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Geos LLC</title>
+    <meta name="description" content="Privacy Policy for Geos LLC products and services.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0b; --bg-secondary: #111113; --bg-card: #18181b;
+            --text-primary: #fafafa; --text-secondary: #a1a1aa;
+            --accent: #6b7280; --accent-light: #9ca3af; --accent-hover: #d1d5db;
+            --border: #27272a; --blue: #3b82f6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.7; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 10, 11, 0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; max-width: 1200px; margin: 0 auto; }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-img { height: 40px; width: auto; }
+        .logo-text { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--text-primary); letter-spacing: 0.15em; }
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: all 0.2s; display: inline-block; }
+        .nav-links a:hover, .nav-links a.active { color: #60a5fa; transform: translateY(-2px); }
+        .mobile-menu { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; }
+        .mobile-menu span { width: 24px; height: 2px; background: var(--text-primary); }
+
+        .page-header { padding: 160px 0 60px; text-align: center; }
+        .page-header h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; margin-bottom: 16px; letter-spacing: -1px; }
+        .page-header p { color: var(--text-secondary); font-size: 1rem; }
+
+        .policy-content { padding: 0 0 100px; }
+        .policy-container { max-width: 800px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 48px; }
+        
+        .policy-meta { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+        .policy-meta-item { font-size: 0.9rem; }
+        .policy-meta-item strong { color: var(--accent-light); }
+        
+        .policy-section { margin-bottom: 40px; padding: 16px; border-radius: 12px; transition: all 0.3s ease; }
+        .policy-section:hover { background: rgba(59, 130, 246, 0.03); }
+        .policy-section:last-child { margin-bottom: 0; }
+        .policy-section h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; color: var(--text-primary); letter-spacing: -0.5px; transition: color 0.3s; }
+        .policy-section:hover h2 { color: #60a5fa; }
+        .policy-section h3 { font-size: 1.1rem; font-weight: 600; margin: 24px 0 12px; color: var(--text-primary); }
+        .policy-section h4 { font-size: 1rem; font-weight: 600; margin: 20px 0 10px; color: var(--accent-light); }
+        .policy-section p { color: var(--text-secondary); margin-bottom: 16px; }
+        .policy-section ul { color: var(--text-secondary); margin-left: 24px; margin-bottom: 16px; }
+        .policy-section li { margin-bottom: 8px; transition: all 0.2s; }
+        .policy-section li:hover { color: var(--text-primary); transform: translateX(4px); }
+        .policy-section a { color: #60a5fa; text-decoration: none; transition: all 0.2s; }
+        .policy-section a:hover { color: #93c5fd; text-decoration: underline; }
+        
+        .highlight-box { background: var(--bg-primary); border-left: 3px solid var(--blue); padding: 16px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .highlight-box p { margin-bottom: 0; }
+
+        footer { padding: 48px 0; border-top: 1px solid var(--border); }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
+        .footer-left { display: flex; flex-direction: column; gap: 8px; }
+        .footer-copyright { color: var(--text-secondary); font-size: 0.9rem; }
+        .footer-links { display: flex; gap: 24px; list-style: none; }
+        .footer-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: all 0.2s; display: inline-block; }
+        .footer-links a:hover { color: #60a5fa; transform: translateY(-2px); }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-primary); flex-direction: column; padding: 24px; gap: 16px; border-bottom: 1px solid var(--border); }
+            .nav-links.active { display: flex; }
+            .mobile-menu { display: flex; }
+            .policy-container { padding: 32px 24px; }
+            .footer-content { flex-direction: column; text-align: center; }
+            .logo-text { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <a href="index.html" class="logo">
+                <img src="logo.png" alt="GEOS Logo" class="logo-img">
+                <span class="logo-text">GEOS</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="privacy.html" class="active">Privacy Policy</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+            <div class="mobile-menu" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <div class="container">
+            <h1>Privacy Policy</h1>
+            <p>How we collect, use, and protect your information</p>
+        </div>
+    </section>
+
+    <section class="policy-content">
+        <div class="container">
+            <div class="policy-container">
+                
+                <div class="policy-meta">
+                    <div class="policy-meta-item"><strong>Effective Date:</strong> August 8, 2025</div>
+                    <div class="policy-meta-item"><strong>Last Updated:</strong> August 8, 2025</div>
+                </div>
+
+                <div class="policy-section">
+                    <h2>Introduction</h2>
+                    <p>Geos LLC ("we," "our," or "us") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our applications, services, and software solutions.</p>
+                    <p>This policy covers all applications and services developed by Geos LLC. Depending on which of our services you use, different sections of this policy may apply to you.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>Section 1: General Information Collection & Use</h2>
+                    
+                    <h3>Information You Provide</h3>
+                    <ul>
+                        <li><strong>Account Information:</strong> Name, email address, profile information</li>
+                        <li><strong>Contact Information:</strong> Phone numbers, business contact details</li>
+                        <li><strong>Content:</strong> Text, images, videos, and other media you upload</li>
+                        <li><strong>Preferences:</strong> Settings, configurations, and user preferences</li>
+                    </ul>
+                    
+                    <h3>Information We Collect Automatically</h3>
+                    <ul>
+                        <li><strong>Usage Data:</strong> How you interact with our apps, features used, time spent</li>
+                        <li><strong>Device Information:</strong> Device type, operating system, unique device identifiers</li>
+                        <li><strong>Location Data:</strong> Approximate location based on IP address</li>
+                        <li><strong>Log Data:</strong> IP addresses, browser type, access times, pages viewed, API interactions</li>
+                    </ul>
+                    
+                    <h3>Information from Third Parties</h3>
+                    <p>We may collect information from third-party platforms and services you connect to our applications, as detailed in the platform-specific sections below.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>Section 2: Data Security & Your Rights</h2>
+                    
+                    <h3>Data Security</h3>
+                    <p>We implement appropriate security measures to protect your information, including:</p>
+                    <ul>
+                        <li>Encryption of sensitive data</li>
+                        <li>Secure server infrastructure</li>
+                        <li>Regular security assessments</li>
+                        <li>Access controls and authentication</li>
+                    </ul>
+                    <p>However, no method of transmission over the internet is 100% secure.</p>
+                    
+                    <h3>Your Rights and Choices</h3>
+                    <p>You have the right to:</p>
+                    <ul>
+                        <li><strong>Access:</strong> Request a copy of your personal information</li>
+                        <li><strong>Update:</strong> Modify your account information and preferences</li>
+                        <li><strong>Delete:</strong> Request deletion of your personal information</li>
+                        <li><strong>Opt-out:</strong> Unsubscribe from marketing communications</li>
+                        <li><strong>Data Portability:</strong> Request your data in a portable format (where applicable)</li>
+                    </ul>
+                    
+                    <h3>How to Exercise Your Rights</h3>
+                    <ul>
+                        <li>Update your profile settings within our applications</li>
+                        <li>Contact us using the information provided below</li>
+                        <li>Use account deletion features if available</li>
+                    </ul>
+                    
+                    <h3>Data Retention</h3>
+                    <p>We retain your information for as long as necessary to provide our services and fulfill the purposes outlined in this policy, unless a longer retention period is required by law.</p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>Section 3: App-Specific Practices</h2>
+                    
+                    <h3>Social Media Management Apps (Self-Post)</h3>
+                    
+                    <div class="highlight-box">
+                        <p><strong>What Self-Post Does:</strong> Self-Post is our AI-powered social media management application that automatically creates, schedules, and publishes content to your business social media accounts without manual intervention.</p>
+                    </div>
+                    
+                    <h4>Additional Information We Collect for Self-Post:</h4>
+                    <ul>
+                        <li><strong>Social Media Account Access:</strong> Authorized connections to your business profiles</li>
+                        <li><strong>Content for Posting:</strong> Media and text you upload for social media posting</li>
+                        <li><strong>Scheduling Information:</strong> Automated posting preferences and timing</li>
+                        <li><strong>Business Information:</strong> Company details and branding preferences</li>
+                        <li><strong>AI Content Preferences:</strong> Topics, tone, and content guidelines you provide</li>
+                    </ul>
+                    
+                    <h4>AI-Generated Content:</h4>
+                    <ul>
+                        <li>Our AI system automatically creates social media content based on your preferences and business information</li>
+                        <li>Content is generated using industry best practices and your specified guidelines</li>
+                        <li>You maintain control over content topics, tone, and posting frequency</li>
+                        <li>AI-generated content accuracy is not guaranteed; you are responsible for the content posted to your accounts</li>
+                    </ul>
+                    
+                    <h4>Automated Operations:</h4>
+                    <ul>
+                        <li>Self-Post operates autonomously after initial setup, potentially for extended periods</li>
+                        <li>The system continues posting based on your configured preferences</li>
+                        <li>You can modify or halt automated operations at any time through the app settings</li>
+                        <li>Emergency stop features are available to pause all automated posting</li>
+                    </ul>
+                    
+                    <h4>How We Use Your Information in Self-Post:</h4>
+                    <ul>
+                        <li><strong>Content Creation:</strong> Generate automated social media posts using AI</li>
+                        <li><strong>Account Management:</strong> Maintain connections to your social media platforms</li>
+                        <li><strong>Publishing:</strong> Schedule and post content to your authorized accounts</li>
+                        <li><strong>Analytics:</strong> Provide insights on post performance and engagement</li>
+                        <li><strong>Service Optimization:</strong> Improve AI content generation and posting algorithms</li>
+                    </ul>
+                </div>
+
+                <div class="policy-section">
+                    <h2>Section 4: Platform Integrations</h2>
+                    
+                    <h3>Facebook/Instagram/Meta Platforms</h3>
+                    
+                    <h4>Facebook Permissions We Use:</h4>
+                    <ul>
+                        <li><strong>pages_manage_posts:</strong> Create, edit, and delete posts on your Facebook Pages</li>
+                        <li><strong>pages_read_engagement:</strong> Read content and engagement data from your Pages</li>
+                        <li><strong>pages_show_list:</strong> Access the list of Facebook Pages you manage</li>
+                        <li><strong>pages_manage_metadata:</strong> Receive notifications about Page activity and update Page settings</li>
+                        <li><strong>business_management:</strong> Access your Facebook Business Manager accounts and data</li>
+                        <li><strong>read_insights:</strong> Access analytics and insights data for your Pages</li>
+                    </ul>
+                    
+                    <h4>Instagram Permissions We Use:</h4>
+                    <ul>
+                        <li><strong>instagram_basic:</strong> Access your Instagram account profile and media information</li>
+                        <li><strong>instagram_content_publish:</strong> Create and publish posts to your Instagram account</li>
+                        <li><strong>instagram_manage_insights:</strong> Access Instagram analytics and insights data</li>
+                    </ul>
+                    
+                    <h3>Google Services (Google My Business)</h3>
+                    <h4>Google My Business Integration:</h4>
+                    <ul>
+                        <li><strong>Business Profile Access:</strong> Read and manage your Google My Business listings</li>
+                        <li><strong>Post Publishing:</strong> Create and publish posts to your business profiles</li>
+                        <li><strong>Insights Data:</strong> Access performance metrics for your business listings</li>
+                        <li><strong>Review Management:</strong> Monitor and respond to customer reviews</li>
+                        <li><strong>Location Information:</strong> Access business location and contact details</li>
+                    </ul>
+                    
+                    <h3>LinkedIn Business Profiles</h3>
+                    <h4>LinkedIn Integration:</h4>
+                    <ul>
+                        <li><strong>Company Page Access:</strong> Manage posts on your LinkedIn company pages</li>
+                        <li><strong>Content Publishing:</strong> Create and schedule posts for your business profiles</li>
+                        <li><strong>Analytics Access:</strong> Retrieve engagement and performance data</li>
+                        <li><strong>Follower Information:</strong> Access follower demographics and growth metrics</li>
+                    </ul>
+                    
+                    <h3>Other Platform Integrations</h3>
+                    <p>As we expand our platform integrations, this section will be updated to reflect new social media and business platforms we support.</p>
+                    
+                    <div class="highlight-box">
+                        <p><strong>Important Notes About Platform Integrations:</strong></p>
+                        <ul style="margin-bottom:0;margin-top:8px;">
+                            <li>We only access information you explicitly authorize through each platform's permission system</li>
+                            <li>You can revoke these permissions at any time through the respective platform's settings</li>
+                            <li>We comply with each platform's policies and terms of service</li>
+                            <li>Your social media data is used solely for the management features you request</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="policy-section">
+                    <h2>Section 5: How We Share Your Information</h2>
+                    <p>We may share your information:</p>
+                    <ul>
+                        <li><strong>With Your Consent:</strong> When you explicitly agree to sharing</li>
+                        <li><strong>Service Providers:</strong> With trusted third-party service providers who assist us</li>
+                        <li><strong>Business Transfers:</strong> In connection with mergers, acquisitions, or asset sales</li>
+                        <li><strong>Legal Requirements:</strong> To comply with legal processes or protect rights and safety</li>
+                        <li><strong>Public Information:</strong> Content you choose to make public may be visible to other users</li>
+                    </ul>
+                </div>
+
+                <div class="policy-section">
+                    <h2>Section 6: General Policies</h2>
+                    
+                    <h3>Children's Privacy</h3>
+                    <p>Our services are not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If we become aware that we have collected such information, we will delete it promptly.</p>
+                    
+                    <h3>International Data Transfers</h3>
+                    <p>Your information may be transferred to and processed in countries other than your own. We ensure appropriate safeguards are in place for such transfers.</p>
+                    
+                    <h3>Third-Party Links and Services</h3>
+                    <p>Our applications may contain links to third-party websites or services. This Privacy Policy does not apply to these third parties, and we encourage you to review their privacy policies.</p>
+                    
+                    <h3>Changes to This Privacy Policy</h3>
+                    <p>We may update this Privacy Policy from time to time. We will notify you of any material changes by:</p>
+                    <ul>
+                        <li>Posting the updated policy in our applications</li>
+                        <li>Sending you a notification</li>
+                        <li>Updating the "Last Updated" date</li>
+                    </ul>
+                </div>
+
+                <div class="policy-section">
+                    <h2>Contact Us</h2>
+                    <p>If you have questions about this Privacy Policy or our privacy practices, please contact us:</p>
+                    <p>
+                        <strong>Geos LLC</strong><br>
+                        Email: <a href="mailto:info@geos-ai.com">info@geos-ai.com</a><br>
+                        Phone: (248) 346-2681<br>
+                        Address: 5631 Raven Ct, Bloomfield Hills, MI 48301
+                    </p>
+                </div>
+
+                <div class="policy-section">
+                    <h2>Legal Compliance</h2>
+                    <p>This Privacy Policy is designed to comply with:</p>
+                    <ul>
+                        <li>General Data Protection Regulation (GDPR)</li>
+                        <li>California Consumer Privacy Act (CCPA)</li>
+                        <li>Facebook Platform Policy</li>
+                        <li>Google API Services User Data Policy</li>
+                        <li>LinkedIn Developer Program Policy</li>
+                        <li>Other applicable privacy laws</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <a href="index.html" class="logo">
+                        <img src="logo.png" alt="GEOS Logo" class="logo-img">
+                        <span class="logo-text">GEOS</span>
+                    </a>
+                    <p class="footer-copyright">© 2025 Geos LLC. All rights reserved.</p>
+                </div>
+                <ul class="footer-links">
+                    <li><a href="portfolio.html">Portfolio</a></li>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script>function toggleMenu() { document.getElementById('navLinks').classList.toggle('active'); }</script>
+</body>
+</html>
