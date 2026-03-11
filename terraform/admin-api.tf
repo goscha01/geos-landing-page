@@ -102,7 +102,7 @@ resource "aws_lambda_function_url" "admin_api" {
 
   cors {
     allow_origins = ["https://www.geos-ai.com", "https://geos-ai.com", "http://localhost:*"]
-    allow_methods = ["GET"]
+    allow_methods = ["*"]
     allow_headers = ["Content-Type", "Authorization"]
     max_age       = 3600
   }

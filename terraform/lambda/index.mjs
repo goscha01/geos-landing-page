@@ -192,11 +192,10 @@ async function setEcsDesiredCount(cluster, service, count) {
 // ── Handler ──
 
 export async function handler(event) {
+  // CORS is handled by the Lambda Function URL config — do NOT set CORS headers here
+  // (duplicate headers cause browsers to reject the response)
   const headers = {
     "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
   };
 
   if (event.requestContext?.http?.method === "OPTIONS") {
