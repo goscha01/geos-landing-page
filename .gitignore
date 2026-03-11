@@ -5,3 +5,4 @@ terraform/.terraform.lock.hcl
 *.tfvars
 .DS_Store
 .claude/
+terraform/lambda/*.zip

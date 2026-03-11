@@ -18,6 +18,7 @@
             --accent: #6b7280;
             --accent-light: #9ca3af;
             --border: #27272a;
+            --border-hover: #3f3f46;
             --success: #22c55e;
             --warning: #f59e0b;
             --error: #ef4444;
@@ -34,7 +35,7 @@
             min-height: 100vh;
         }
 
-        /* ── Login Screen ── */
+        /* ── Login ── */
         .login-overlay {
             position: fixed; inset: 0; z-index: 1000;
             background: var(--bg-primary);
@@ -44,53 +45,33 @@
         .login-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
         .login-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 48px;
-            width: 100%; max-width: 420px;
-            text-align: center;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 48px;
+            width: 100%; max-width: 420px; text-align: center;
         }
         .login-card .logo-text {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.5rem; font-weight: 700;
-            letter-spacing: 0.15em;
-            margin-bottom: 8px;
+            letter-spacing: 0.15em; margin-bottom: 8px;
         }
-        .login-card .subtitle {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 32px;
-        }
+        .login-card .subtitle { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 32px; }
         .login-card input {
             width: 100%; padding: 12px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            font-family: 'DM Sans', sans-serif;
-            margin-bottom: 16px;
-            outline: none;
-            transition: border-color 0.2s;
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text-primary);
+            font-size: 0.95rem; font-family: 'DM Sans', sans-serif;
+            margin-bottom: 16px; outline: none; transition: border-color 0.2s;
         }
         .login-card input:focus { border-color: var(--accent-light); }
         .login-card input::placeholder { color: var(--accent); }
-        .login-error {
-            color: var(--error);
-            font-size: 0.85rem;
-            margin-bottom: 12px;
-            min-height: 20px;
-        }
+        .login-error { color: var(--error); font-size: 0.85rem; margin-bottom: 12px; min-height: 20px; }
         .login-btn {
             width: 100%; padding: 12px;
-            background: var(--text-primary);
-            color: var(--bg-primary);
+            background: var(--text-primary); color: var(--bg-primary);
             border: none; border-radius: 8px;
             font-size: 0.95rem; font-weight: 600;
             font-family: 'DM Sans', sans-serif;
-            cursor: pointer;
-            transition: opacity 0.2s;
+            cursor: pointer; transition: opacity 0.2s;
         }
         .login-btn:hover { opacity: 0.9; }
 
@@ -98,150 +79,107 @@
         .dashboard { display: none; }
         .dashboard.visible { display: block; }
 
-        /* Top bar */
         .topbar {
             position: sticky; top: 0; z-index: 50;
-            background: rgba(10, 10, 11, 0.92);
-            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 11, 0.92); backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
             padding: 16px 32px;
             display: flex; justify-content: space-between; align-items: center;
         }
         .topbar-left { display: flex; align-items: center; gap: 16px; }
         .topbar-logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem; font-weight: 700;
-            letter-spacing: 0.12em;
-            color: var(--text-primary);
-            text-decoration: none;
+            font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 700;
+            letter-spacing: 0.12em; color: var(--text-primary); text-decoration: none;
         }
-        .topbar-divider {
-            width: 1px; height: 24px;
-            background: var(--border);
-        }
-        .topbar-title {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
+        .topbar-divider { width: 1px; height: 24px; background: var(--border); }
+        .topbar-title { color: var(--text-secondary); font-size: 0.95rem; }
         .topbar-right { display: flex; align-items: center; gap: 16px; }
-        .topbar-time {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
+        .topbar-time { color: var(--text-secondary); font-size: 0.85rem; }
         .logout-btn {
-            padding: 8px 16px;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            font-family: 'DM Sans', sans-serif;
-            cursor: pointer;
+            padding: 8px 16px; background: transparent;
+            border: 1px solid var(--border); border-radius: 8px;
+            color: var(--text-secondary); font-size: 0.85rem;
+            font-family: 'DM Sans', sans-serif; cursor: pointer;
             transition: border-color 0.2s, color 0.2s;
         }
         .logout-btn:hover { border-color: var(--error); color: var(--error); }
 
-        /* Summary cards */
+        /* Summary */
         .summary-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            padding: 24px 32px 0;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 16px; padding: 24px 32px 0;
         }
         .summary-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px 24px;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px 24px;
         }
         .summary-label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-bottom: 8px;
+            font-size: 0.8rem; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;
         }
-        .summary-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
+        .summary-value { font-size: 1.8rem; font-weight: 700; }
         .summary-value.green { color: var(--success); }
-        .summary-value.yellow { color: var(--warning); }
         .summary-value.red { color: var(--error); }
         .summary-value.blue { color: var(--info); }
 
-        /* Project grid */
+        /* Section */
         .projects-section { padding: 24px 32px 48px; }
         .section-header {
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 20px;
         }
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
+        .section-title { font-size: 1.1rem; font-weight: 600; }
         .refresh-btn {
             display: flex; align-items: center; gap: 6px;
-            padding: 8px 14px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            font-family: 'DM Sans', sans-serif;
-            cursor: pointer;
+            padding: 8px 14px; background: var(--bg-card);
+            border: 1px solid var(--border); border-radius: 8px;
+            color: var(--text-secondary); font-size: 0.85rem;
+            font-family: 'DM Sans', sans-serif; cursor: pointer;
             transition: border-color 0.2s, color 0.2s;
         }
         .refresh-btn:hover { border-color: var(--accent-light); color: var(--text-primary); }
         .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        .loading-msg {
+            text-align: center; padding: 40px;
+            color: var(--text-secondary); font-size: 0.95rem;
+        }
+
+        /* ── Project Grid: 3 per row ── */
         .projects-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 16px;
         }
 
-        /* Project card */
+        /* ── Compact Card ── */
         .project-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 24px 28px;
-            transition: border-color 0.2s;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 20px 22px;
+            cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s;
+            position: relative;
         }
-        .project-card:hover { border-color: #3f3f46; }
+        .project-card:hover { border-color: var(--border-hover); }
+        .project-card.expanded { border-color: var(--accent); }
 
-        .project-header {
+        .card-top {
             display: flex; justify-content: space-between; align-items: flex-start;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
-        .project-info { flex: 1; }
-        .project-name {
-            font-size: 1.15rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .project-env {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        .project-actions { display: flex; gap: 8px; align-items: center; }
+        .card-top-left { flex: 1; min-width: 0; }
+        .project-name { font-size: 1rem; font-weight: 600; margin-bottom: 2px; }
+        .project-env { font-size: 0.75rem; color: var(--text-secondary); }
 
         /* Status badge */
         .status-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 5px 12px;
-            border-radius: 100px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 10px; border-radius: 100px;
+            font-size: 0.72rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.04em;
+            white-space: nowrap; flex-shrink: 0;
         }
-        .status-badge .dot {
-            width: 7px; height: 7px;
-            border-radius: 50%;
-        }
+        .status-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
         .status-badge.healthy { background: rgba(34,197,94,0.12); color: var(--success); }
         .status-badge.healthy .dot { background: var(--success); }
         .status-badge.degraded { background: rgba(245,158,11,0.12); color: var(--warning); }
@@ -254,102 +192,100 @@
         .status-badge.deploying .dot { background: var(--info); animation: pulse-dot 1.5s infinite; }
         @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        /* Pause / Resume button */
+        /* Compact stats row */
+        .card-stats {
+            display: flex; gap: 16px; margin-bottom: 12px;
+        }
+        .card-stat {
+            display: flex; flex-direction: column; gap: 2px;
+        }
+        .card-stat-label { font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+        .card-stat-value { font-size: 0.9rem; font-weight: 600; }
+
+        /* Deploy bar (compact) */
+        .card-deploy-bar {
+            width: 100%; height: 4px;
+            background: var(--bg-secondary); border-radius: 2px; overflow: hidden;
+        }
+        .card-deploy-fill {
+            height: 100%; border-radius: 2px; transition: width 0.6s ease;
+        }
+        .card-deploy-fill.success { background: var(--success); }
+        .card-deploy-fill.in-progress { background: var(--info); animation: bar-pulse 2s infinite; }
+        .card-deploy-fill.failed { background: var(--error); }
+        @keyframes bar-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+        /* Expand chevron */
+        .expand-icon {
+            display: flex; justify-content: center; margin-top: 10px;
+            color: var(--accent); transition: color 0.2s;
+        }
+        .project-card:hover .expand-icon { color: var(--text-secondary); }
+        .expand-icon svg { transition: transform 0.3s; }
+        .project-card.expanded .expand-icon svg { transform: rotate(180deg); }
+
+        /* ── Expanded Details ── */
+        .card-details {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s;
+            opacity: 0;
+        }
+        .project-card.expanded .card-details {
+            max-height: 500px; opacity: 1; margin-top: 16px;
+        }
+
+        .details-inner {
+            padding-top: 16px; border-top: 1px solid var(--border);
+        }
+        .detail-metrics {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 12px; margin-bottom: 14px;
+        }
+        .detail-metric { display: flex; flex-direction: column; gap: 3px; }
+        .detail-metric-label { font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+        .detail-metric-value { font-size: 0.88rem; font-weight: 500; }
+
+        .detail-actions {
+            display: flex; gap: 8px; margin-top: 14px;
+        }
         .pause-btn {
-            display: flex; align-items: center; gap: 6px;
-            padding: 7px 14px;
-            border-radius: 8px;
-            font-size: 0.82rem; font-weight: 500;
+            display: flex; align-items: center; gap: 5px;
+            padding: 6px 12px; border-radius: 7px;
+            font-size: 0.78rem; font-weight: 500;
             font-family: 'DM Sans', sans-serif;
-            cursor: pointer;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text-secondary);
+            cursor: pointer; border: 1px solid var(--border);
+            background: transparent; color: var(--text-secondary);
             transition: all 0.2s;
         }
         .pause-btn:hover { border-color: var(--warning); color: var(--warning); }
         .pause-btn.paused { border-color: var(--success); color: var(--success); }
-        .pause-btn.paused:hover { border-color: var(--success); color: var(--success); }
+        .pause-btn.paused:hover { border-color: var(--success); }
         .pause-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Metrics row */
-        .project-metrics {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-        .metric {
-            display: flex; flex-direction: column; gap: 4px;
-        }
-        .metric-label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-        .metric-value {
-            font-size: 1rem;
-            font-weight: 600;
-        }
-        .metric-value.cost { color: var(--info); }
-
-        /* Deployment progress bar */
-        .deploy-section { margin-bottom: 12px; }
-        .deploy-label {
-            display: flex; justify-content: space-between;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-        }
-        .deploy-bar {
-            width: 100%; height: 6px;
-            background: var(--bg-secondary);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-        .deploy-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.6s ease;
-        }
-        .deploy-fill.success { background: var(--success); }
-        .deploy-fill.in-progress { background: var(--info); animation: bar-pulse 2s infinite; }
-        .deploy-fill.failed { background: var(--error); }
-        @keyframes bar-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
-
-        /* Error list */
-        .error-list {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border);
-        }
+        /* Error list in details */
+        .error-list { margin-top: 12px; }
         .error-item {
-            display: flex; align-items: center; gap: 8px;
-            padding: 6px 0;
-            font-size: 0.82rem;
+            display: flex; align-items: center; gap: 6px;
+            padding: 4px 0; font-size: 0.78rem;
         }
         .error-icon { color: var(--error); flex-shrink: 0; }
-        .error-time { color: var(--text-secondary); margin-left: auto; white-space: nowrap; }
+        .error-time { color: var(--text-secondary); margin-left: auto; white-space: nowrap; font-size: 0.72rem; }
 
-        /* Responsive */
-        @media (max-width: 900px) {
+        /* ── Responsive ── */
+        @media (max-width: 1100px) {
+            .projects-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 700px) {
             .summary-row { grid-template-columns: repeat(2, 1fr); }
-            .project-metrics { grid-template-columns: repeat(2, 1fr); }
+            .projects-grid { grid-template-columns: 1fr; }
             .topbar { padding: 14px 16px; }
             .summary-row, .projects-section { padding-left: 16px; padding-right: 16px; }
-        }
-        @media (max-width: 600px) {
-            .summary-row { grid-template-columns: 1fr; }
-            .project-header { flex-direction: column; gap: 12px; }
-            .project-actions { width: 100%; justify-content: flex-start; }
-            .project-metrics { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
 <body>
 
-<!-- ── Login ── -->
+<!-- Login -->
 <div class="login-overlay" id="loginOverlay">
     <div class="login-card">
         <div class="logo-text">GEOS</div>
@@ -361,7 +297,7 @@
     </div>
 </div>
 
-<!-- ── Dashboard ── -->
+<!-- Dashboard -->
 <div class="dashboard" id="dashboard">
     <div class="topbar">
         <div class="topbar-left">
@@ -375,27 +311,25 @@
         </div>
     </div>
 
-    <!-- Summary -->
-    <div class="summary-row" id="summaryRow">
+    <div class="summary-row">
         <div class="summary-card">
             <div class="summary-label">Total Projects</div>
-            <div class="summary-value" id="sumTotal">0</div>
+            <div class="summary-value" id="sumTotal">-</div>
         </div>
         <div class="summary-card">
             <div class="summary-label">Healthy</div>
-            <div class="summary-value green" id="sumHealthy">0</div>
+            <div class="summary-value green" id="sumHealthy">-</div>
         </div>
         <div class="summary-card">
-            <div class="summary-label">Errors</div>
-            <div class="summary-value red" id="sumErrors">0</div>
+            <div class="summary-label">Errors (24h)</div>
+            <div class="summary-value red" id="sumErrors">-</div>
         </div>
         <div class="summary-card">
-            <div class="summary-label">Monthly Cost</div>
-            <div class="summary-value blue" id="sumCost">$0</div>
+            <div class="summary-label">AWS Cost (MTD)</div>
+            <div class="summary-value blue" id="sumCost">-</div>
         </div>
     </div>
 
-    <!-- Projects -->
     <div class="projects-section">
         <div class="section-header">
             <div class="section-title">Projects</div>
@@ -404,86 +338,39 @@
                 Refresh
             </button>
         </div>
-        <div class="projects-grid" id="projectsGrid"></div>
+        <div class="projects-grid" id="projectsGrid">
+            <div class="loading-msg">Loading project data...</div>
+        </div>
     </div>
 </div>
 
 <script>
 // =========================================================================
-// Project configuration — edit this array to add/remove projects
+// Config
 // =========================================================================
-const PROJECTS = [
-    {
-        id: 'leadbridge-api',
-        name: 'LeadBridge API',
-        env: 'Production  ·  AWS ECS',
-        status: 'healthy',          // healthy | degraded | down | paused | deploying
-        deployStatus: 'success',    // success | in-progress | failed
-        deployProgress: 100,
-        lastDeploy: '2026-03-11 09:42',
-        uptime: '99.97%',
-        errors24h: 0,
-        monthlyCost: 48.50,
-        costBreakdown: 'ECS $32 · RDS $12 · S3 $4.50',
-        paused: false,
-        recentErrors: [],
-    },
-    {
-        id: 'leadbridge-frontend',
-        name: 'LeadBridge Frontend',
-        env: 'Production  ·  AWS S3 + CloudFront',
-        status: 'healthy',
-        deployStatus: 'success',
-        deployProgress: 100,
-        lastDeploy: '2026-03-10 15:20',
-        uptime: '100%',
-        errors24h: 0,
-        monthlyCost: 6.20,
-        costBreakdown: 'CloudFront $4 · S3 $2.20',
-        paused: false,
-        recentErrors: [],
-    },
-    {
-        id: 'sigcore-staging',
-        name: 'Sigcore',
-        env: 'Staging  ·  Railway',
-        status: 'healthy',
-        deployStatus: 'success',
-        deployProgress: 100,
-        lastDeploy: '2026-03-11 08:10',
-        uptime: '99.90%',
-        errors24h: 0,
-        monthlyCost: 12.00,
-        costBreakdown: 'Railway $12',
-        paused: false,
-        recentErrors: [],
-    },
-    {
-        id: 'geos-landing',
-        name: 'Geos Landing Page',
-        env: 'Production  ·  GitHub Pages',
-        status: 'healthy',
-        deployStatus: 'success',
-        deployProgress: 100,
-        lastDeploy: '2026-03-09 11:00',
-        uptime: '100%',
-        errors24h: 0,
-        monthlyCost: 0,
-        costBreakdown: 'Free tier',
-        paused: false,
-        recentErrors: [],
-    },
-];
+const API_URL = 'https://wqbjps7skhyhlvdy2li7nmpdtm0okjdb.lambda-url.us-east-1.on.aws/';
+const API_TOKEN = 'ZX7AcYCY8kxEo857spMlXWykeEbCWwNa';
 
-// =========================================================================
-// Auth (simple client-side — replace with real auth for production)
-// =========================================================================
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'geos2026';
 
-function checkSession() {
-    return sessionStorage.getItem('geos_admin') === 'true';
-}
+// Fallback data when API is not yet configured
+const FALLBACK_PROJECTS = [
+    { id: 'leadbridge-api', name: 'LeadBridge API', env: 'Production  ·  AWS ECS', status: 'healthy', deployStatus: 'success', deployProgress: 100, lastDeploy: null, errors24h: 0, recentErrors: [], paused: false },
+    { id: 'sigcore-api', name: 'Sigcore API', env: 'Production  ·  AWS ECS', status: 'healthy', deployStatus: 'success', deployProgress: 100, lastDeploy: null, errors24h: 0, recentErrors: [], paused: false },
+    { id: 'checkcapture-api', name: 'CheckCapture API', env: 'Production  ·  AWS ECS', status: 'healthy', deployStatus: 'success', deployProgress: 100, lastDeploy: null, errors24h: 0, recentErrors: [], paused: false },
+    { id: 'leadbridge-frontend', name: 'LeadBridge Frontend', env: 'Production  ·  S3 + CloudFront', status: 'healthy', deployStatus: 'success', deployProgress: 100, lastDeploy: null, errors24h: 0, recentErrors: [], paused: false },
+    { id: 'geos-landing', name: 'Geos Landing Page', env: 'Production  ·  S3 + CloudFront', status: 'healthy', deployStatus: 'success', deployProgress: 100, lastDeploy: null, errors24h: 0, recentErrors: [], paused: false },
+];
+
+let projects = [];
+let costData = { total: 0, breakdown: {}, summary: {} };
+let expandedId = null;
+
+// =========================================================================
+// Auth
+// =========================================================================
+function checkSession() { return sessionStorage.getItem('geos_admin') === 'true'; }
 
 function login() {
     const user = document.getElementById('loginUser').value.trim();
@@ -493,6 +380,7 @@ function login() {
         document.getElementById('loginOverlay').classList.add('hidden');
         document.getElementById('dashboard').classList.add('visible');
         document.getElementById('loginError').textContent = '';
+        fetchData();
     } else {
         document.getElementById('loginError').textContent = 'Invalid credentials';
     }
@@ -502,30 +390,54 @@ function logout() {
     sessionStorage.removeItem('geos_admin');
     document.getElementById('loginOverlay').classList.remove('hidden');
     document.getElementById('dashboard').classList.remove('visible');
-    document.getElementById('loginUser').value = '';
-    document.getElementById('loginPass').value = '';
 }
 
 document.getElementById('loginBtn').addEventListener('click', login);
-document.getElementById('loginPass').addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 document.getElementById('logoutBtn').addEventListener('click', logout);
 
 if (checkSession()) {
     document.getElementById('loginOverlay').classList.add('hidden');
     document.getElementById('dashboard').classList.add('visible');
+    fetchData();
 }
 
 // =========================================================================
 // Clock
 // =========================================================================
 function updateClock() {
-    const now = new Date();
-    document.getElementById('clock').textContent = now.toLocaleString('en-US', {
+    document.getElementById('clock').textContent = new Date().toLocaleString('en-US', {
         month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit',
     });
 }
 updateClock();
 setInterval(updateClock, 1000);
+
+// =========================================================================
+// Data fetching
+// =========================================================================
+async function fetchData() {
+    if (!API_URL) {
+        projects = FALLBACK_PROJECTS;
+        renderAll();
+        return;
+    }
+
+    try {
+        const resp = await fetch(API_URL, {
+            headers: API_TOKEN ? { Authorization: `Bearer ${API_TOKEN}` } : {},
+        });
+        if (!resp.ok) throw new Error(`${resp.status}`);
+        const data = await resp.json();
+        projects = data.projects || FALLBACK_PROJECTS;
+        costData = data.cost || costData;
+        renderAll();
+    } catch (e) {
+        console.error('API fetch failed:', e);
+        projects = FALLBACK_PROJECTS;
+        renderAll();
+    }
+}
 
 // =========================================================================
 // Render
@@ -534,131 +446,166 @@ function statusLabel(s) {
     return { healthy: 'Healthy', degraded: 'Degraded', down: 'Down', paused: 'Paused', deploying: 'Deploying' }[s] || s;
 }
 
+function fmtDate(d) {
+    if (!d) return '—';
+    const dt = new Date(d);
+    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
+           dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
+
+function renderAll() {
+    renderSummary();
+    renderProjects();
+}
+
 function renderSummary() {
-    const total = PROJECTS.length;
-    const healthy = PROJECTS.filter(p => p.status === 'healthy').length;
-    const errors = PROJECTS.reduce((n, p) => n + p.errors24h, 0);
-    const cost = PROJECTS.reduce((n, p) => n + p.monthlyCost, 0);
+    const total = projects.length;
+    const healthy = projects.filter(p => p.status === 'healthy').length;
+    const errors = projects.reduce((n, p) => n + (p.errors24h || 0), 0);
     document.getElementById('sumTotal').textContent = total;
     document.getElementById('sumHealthy').textContent = healthy;
     document.getElementById('sumErrors').textContent = errors;
-    document.getElementById('sumCost').textContent = '$' + cost.toFixed(2);
+    document.getElementById('sumCost').textContent = costData.total > 0
+        ? '$' + costData.total.toFixed(2)
+        : '—';
 }
 
 function renderProjects() {
     const grid = document.getElementById('projectsGrid');
     grid.innerHTML = '';
 
-    PROJECTS.forEach((p) => {
-        const isPaused = p.paused;
-        const st = isPaused ? 'paused' : p.status;
+    projects.forEach(p => {
+        const st = p.paused ? 'paused' : (p.status || 'healthy');
+        const isExpanded = expandedId === p.id;
+        const errCount = p.errors24h || 0;
+        const ds = p.deployStatus || 'success';
+        const dp = p.deployProgress ?? 100;
 
-        const errorsHtml = p.recentErrors.length > 0
-            ? `<div class="error-list">${p.recentErrors.map(e =>
+        // Errors HTML
+        const errorsHtml = (p.recentErrors || []).length > 0
+            ? `<div class="error-list">${(p.recentErrors || []).slice(0, 5).map(e =>
                 `<div class="error-item">
-                    <span class="error-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
-                    <span>${e.msg}</span>
-                    <span class="error-time">${e.time}</span>
-                </div>`).join('')}</div>`
-            : '';
+                    <span class="error-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+                    <span>${escHtml(e.msg || '')}</span>
+                    <span class="error-time">${escHtml(e.time || '')}</span>
+                </div>`).join('')}</div>` : '';
+
+        // Cost breakdown for this project
+        const costInfo = costData.summary || {};
+        const isEcs = (p.env || '').includes('ECS');
 
         const card = document.createElement('div');
-        card.className = 'project-card';
+        card.className = 'project-card' + (isExpanded ? ' expanded' : '');
         card.innerHTML = `
-            <div class="project-header">
-                <div class="project-info">
-                    <div class="project-name">${p.name}</div>
-                    <div class="project-env">${p.env}</div>
+            <div class="card-top">
+                <div class="card-top-left">
+                    <div class="project-name">${escHtml(p.name)}</div>
+                    <div class="project-env">${escHtml(p.env)}</div>
                 </div>
-                <div class="project-actions">
-                    <span class="status-badge ${st}">
-                        <span class="dot"></span>
-                        ${statusLabel(st)}
-                    </span>
-                    <button class="pause-btn ${isPaused ? 'paused' : ''}" data-id="${p.id}">
-                        ${isPaused
-                            ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Resume'
-                            : '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause'}
-                    </button>
-                </div>
+                <span class="status-badge ${st}">
+                    <span class="dot"></span>
+                    ${statusLabel(st)}
+                </span>
             </div>
 
-            <div class="project-metrics">
-                <div class="metric">
-                    <span class="metric-label">Uptime</span>
-                    <span class="metric-value">${isPaused ? '—' : p.uptime}</span>
+            <div class="card-stats">
+                <div class="card-stat">
+                    <span class="card-stat-label">Errors</span>
+                    <span class="card-stat-value" style="color: ${errCount > 0 ? 'var(--error)' : 'var(--success)'}">${errCount}</span>
                 </div>
-                <div class="metric">
-                    <span class="metric-label">Errors (24h)</span>
-                    <span class="metric-value" style="color: ${p.errors24h > 0 ? 'var(--error)' : 'var(--success)'}">${p.errors24h}</span>
+                <div class="card-stat">
+                    <span class="card-stat-label">Deploy</span>
+                    <span class="card-stat-value" style="font-size:0.82rem">${ds === 'in-progress' ? dp + '%' : (ds === 'failed' ? 'Failed' : 'OK')}</span>
                 </div>
-                <div class="metric">
-                    <span class="metric-label">Monthly Cost</span>
-                    <span class="metric-value cost">${p.monthlyCost === 0 ? 'Free' : '$' + p.monthlyCost.toFixed(2)}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Breakdown</span>
-                    <span class="metric-value" style="font-size:0.82rem; color:var(--text-secondary)">${p.costBreakdown}</span>
-                </div>
+                ${p.running !== undefined ? `
+                <div class="card-stat">
+                    <span class="card-stat-label">Tasks</span>
+                    <span class="card-stat-value">${p.running}/${p.desired}</span>
+                </div>` : ''}
             </div>
 
-            <div class="deploy-section">
-                <div class="deploy-label">
-                    <span>Last Deploy: ${p.lastDeploy}</span>
-                    <span>${p.deployStatus === 'in-progress' ? p.deployProgress + '%' : (p.deployStatus === 'failed' ? 'Failed' : 'Complete')}</span>
-                </div>
-                <div class="deploy-bar">
-                    <div class="deploy-fill ${p.deployStatus === 'in-progress' ? 'in-progress' : (p.deployStatus === 'failed' ? 'failed' : 'success')}"
-                         style="width: ${p.deployProgress}%"></div>
-                </div>
+            <div class="card-deploy-bar">
+                <div class="card-deploy-fill ${ds === 'in-progress' ? 'in-progress' : (ds === 'failed' ? 'failed' : 'success')}" style="width:${dp}%"></div>
             </div>
 
-            ${errorsHtml}
+            <div class="expand-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+
+            <div class="card-details">
+                <div class="details-inner">
+                    <div class="detail-metrics">
+                        <div class="detail-metric">
+                            <span class="detail-metric-label">Last Deploy</span>
+                            <span class="detail-metric-value">${fmtDate(p.lastDeploy)}</span>
+                        </div>
+                        <div class="detail-metric">
+                            <span class="detail-metric-label">Status</span>
+                            <span class="detail-metric-value">${statusLabel(st)}</span>
+                        </div>
+                        ${p.running !== undefined ? `
+                        <div class="detail-metric">
+                            <span class="detail-metric-label">Running / Desired</span>
+                            <span class="detail-metric-value">${p.running} / ${p.desired}</span>
+                        </div>` : ''}
+                        <div class="detail-metric">
+                            <span class="detail-metric-label">Errors (24h)</span>
+                            <span class="detail-metric-value" style="color: ${errCount > 0 ? 'var(--error)' : 'var(--success)'}">${errCount}</span>
+                        </div>
+                    </div>
+
+                    ${errorsHtml}
+
+                    ${isEcs ? `
+                    <div class="detail-actions">
+                        <button class="pause-btn ${p.paused ? 'paused' : ''}" data-id="${p.id}" onclick="event.stopPropagation(); togglePause('${p.id}')">
+                            ${p.paused
+                                ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Resume'
+                                : '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause'}
+                        </button>
+                    </div>` : ''}
+                </div>
+            </div>
         `;
-        grid.appendChild(card);
-    });
 
-    // Attach pause button handlers
-    document.querySelectorAll('.pause-btn').forEach(btn => {
-        btn.addEventListener('click', () => togglePause(btn.dataset.id));
+        // Toggle expand on card click
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('.pause-btn')) return;
+            expandedId = expandedId === p.id ? null : p.id;
+            renderProjects();
+        });
+
+        grid.appendChild(card);
     });
 }
 
-function togglePause(projectId) {
-    const proj = PROJECTS.find(p => p.id === projectId);
-    if (!proj) return;
+function escHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+}
 
+function togglePause(projectId) {
+    const proj = projects.find(p => p.id === projectId);
+    if (!proj) return;
     const action = proj.paused ? 'resume' : 'pause';
     if (!confirm(`Are you sure you want to ${action} "${proj.name}"?`)) return;
 
     proj.paused = !proj.paused;
-    if (proj.paused) {
-        proj.status = 'paused';
-    } else {
-        proj.status = 'healthy';
-    }
+    proj.status = proj.paused ? 'paused' : 'healthy';
+    renderAll();
 
-    renderSummary();
-    renderProjects();
-
-    // TODO: Wire up real AWS ECS / Railway API calls here
-    // Example for ECS: update desired count to 0 (pause) or 1 (resume)
-    console.log(`[Admin] ${action} project: ${proj.name}`);
+    // TODO: Call Lambda to actually update ECS desired count
+    console.log(`[Admin] ${action}: ${proj.name}`);
 }
 
-// Refresh button
+// Refresh
 document.getElementById('refreshBtn').addEventListener('click', function () {
     this.classList.add('spinning');
-    setTimeout(() => {
-        renderSummary();
-        renderProjects();
-        this.classList.remove('spinning');
-    }, 800);
+    fetchData().finally(() => {
+        setTimeout(() => this.classList.remove('spinning'), 400);
+    });
 });
-
-// Initial render
-renderSummary();
-renderProjects();
 </script>
 </body>
 </html>
