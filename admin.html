@@ -128,9 +128,19 @@
         .pause-btn.resume:hover { border-color: var(--success); color: var(--success); }
         .pause-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
+        /* Drag and drop */
+        .project-card[draggable="true"] { cursor: grab; }
+        .project-card.dragging { opacity: 0.4; cursor: grabbing; }
+        .project-card.drag-over { border-color: var(--info); box-shadow: 0 0 0 1px var(--info); }
+
         /* Deploy bar on card */
         .card-deploy { margin-bottom: 6px; }
         .card-deploy-label { display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-secondary); margin-bottom: 4px; }
+        .card-deploy-detail { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-secondary); margin-top: 4px; }
+        .env-badge { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+        .env-badge.production { background: rgba(239,68,68,0.15); color: var(--error); }
+        .env-badge.staging { background: rgba(245,158,11,0.15); color: var(--warning); }
+        .env-badge.development { background: rgba(59,130,246,0.15); color: var(--info); }
         .card-deploy-bar { width: 100%; height: 4px; background: var(--bg-secondary); border-radius: 2px; overflow: hidden; }
         .card-deploy-fill { height: 100%; border-radius: 2px; transition: width 0.6s; }
         .card-deploy-fill.success { background: var(--success); }
@@ -274,21 +284,56 @@ function $(s) { return s === 0 ? 'Free' : '$' + s.toFixed(2); }
 function fmtDate(d) { if (!d) return '-'; const dt = new Date(d); return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' ' + dt.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}); }
 function badge(st) { return `<span class="status-badge ${st}"><span class="dot"></span>${statusLabel(st)}</span>`; }
 
+function fmtElapsed(startIso) {
+    if (!startIso) return '';
+    const ms = Date.now() - new Date(startIso).getTime();
+    const s = Math.floor(ms / 1000);
+    if (s < 60) return `${s}s ago`;
+    const m = Math.floor(s / 60);
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    return `${h}h ${m % 60}m ago`;
+}
+
 function deployBarHtml(proj) {
-    // Find the most recent ECS or static deploy
     const comps = (proj.components || []).filter(c => c.deployStatus);
     if (comps.length === 0) return '';
-    // Pick worst deploy status: in-progress > failed > success
-    let ds = 'success', dp = 100, lastDeploy = null;
+    let ds = 'success', dp = 100, lastDeploy = null, deployStarted = null, commitSha = null, ghRepo = null;
     for (const c of comps) {
-        if (c.deployStatus === 'in-progress') { ds = 'in-progress'; dp = c.deployProgress || 50; }
+        if (c.deployStatus === 'in-progress') { ds = 'in-progress'; dp = c.deployProgress ?? 50; deployStarted = c.deployStarted; }
         else if (c.deployStatus === 'failed' && ds !== 'in-progress') { ds = 'failed'; dp = 100; }
         if (c.lastDeploy && (!lastDeploy || c.lastDeploy > lastDeploy)) lastDeploy = c.lastDeploy;
+        if (c.commitSha && !commitSha) { commitSha = c.commitSha; ghRepo = c.ghRepo; }
     }
-    const label = ds === 'in-progress' ? `Deploying ${dp}%` : (ds === 'failed' ? 'Deploy Failed' : 'Deployed');
+
+    let label, left;
+    if (ds === 'in-progress') {
+        label = `Deploying ${dp}%`;
+        left = deployStarted ? fmtElapsed(deployStarted) : '';
+    } else if (ds === 'failed') {
+        label = 'Deploy Failed';
+        left = '';
+    } else {
+        label = 'Deployed';
+        left = '';
+    }
+
+    // Build second-line details: env badge, last deploy time, commit hash
+    const detailParts = [];
+    if (lastDeploy) detailParts.push(fmtDate(lastDeploy));
+    if (ds === 'in-progress' && deployStarted) detailParts.push(`started ${fmtElapsed(deployStarted)}`);
+    if (commitSha) {
+        const short = commitSha.substring(0, 7);
+        const link = ghRepo ? `<a href="https://github.com/${ghRepo}/commit/${commitSha}" target="_blank" style="color:var(--info);text-decoration:none;font-family:monospace" title="${commitSha}">${short}</a>` : `<span style="font-family:monospace">${short}</span>`;
+        detailParts.push(link);
+    }
+
+    const detailLine = detailParts.length > 0 ? `<div class="card-deploy-detail"><span>${detailParts.join(' &middot; ')}</span></div>` : '';
+
     return `<div class="card-deploy">
-        <div class="card-deploy-label"><span>${lastDeploy ? fmtDate(lastDeploy) : ''}</span><span>${label}</span></div>
+        <div class="card-deploy-label"><span>${left}</span><span>${label}</span></div>
         <div class="card-deploy-bar"><div class="card-deploy-fill ${ds}" style="width:${dp}%"></div></div>
+        ${detailLine}
     </div>`;
 }
 
@@ -304,24 +349,58 @@ function renderAll() {
     document.getElementById('sumCostDays').textContent = costInfo.dayOfMonth ? `day ${costInfo.dayOfMonth} of ${costInfo.daysInMonth}` : '';
     document.getElementById('sumForecast').textContent = costInfo.forecast != null ? $(costInfo.forecast) : '-';
 
-    // Projects
+    // Projects — apply saved sort order
+    const savedOrder = JSON.parse(localStorage.getItem('geos_card_order') || '[]');
+    const sorted = [...projects].sort((a, b) => {
+        const ai = savedOrder.indexOf(a.id), bi = savedOrder.indexOf(b.id);
+        if (ai === -1 && bi === -1) return 0;
+        if (ai === -1) return 1;
+        if (bi === -1) return -1;
+        return ai - bi;
+    });
+
     const grid = document.getElementById('projectsGrid');
     grid.innerHTML = '';
+    let dragSrcId = null;
 
-    projects.forEach(p => {
+    sorted.forEach(p => {
         const isExp = expandedId === p.id;
         const hasEcs = (p.components || []).some(c => c.type === 'ecs');
-        const allPaused = (p.components || []).filter(c => c.type === 'ecs').every(c => c.paused);
+        const pausableComps = (p.components || []).filter(c => c.type === 'ecs' || c.type === 'rds');
+        const allPaused = pausableComps.length > 0 && pausableComps.every(c => c.paused);
 
         // Components HTML for expanded view
         const compsHtml = (p.components || []).map(c => {
             let detail = '';
             if (c.type === 'ecs') {
                 detail = `${c.running}/${c.desired} tasks`;
-                if (c.deployStatus === 'in-progress') detail += ` &middot; deploying ${c.deployProgress}%`;
+                if (c.deployStatus === 'in-progress') {
+                    detail += ` &middot; <span style="color:var(--info)">deploying ${c.deployProgress}%</span>`;
+                    if (c.deployStarted) detail += ` &middot; started ${fmtElapsed(c.deployStarted)}`;
+                }
                 if (c.lastDeploy) detail += ` &middot; ${fmtDate(c.lastDeploy)}`;
+                if (c.commitSha) {
+                    const short = c.commitSha.substring(0, 7);
+                    const ghUrl = c.ghRepo ? `https://github.com/${c.ghRepo}/commit/${c.commitSha}` : null;
+                    detail += ` &middot; ${ghUrl ? `<a href="${ghUrl}" target="_blank" style="color:var(--info);text-decoration:none;font-family:monospace" title="${c.commitSha}">${short}</a>` : `<span style="font-family:monospace">${short}</span>`}`;
+                }
+                if (c.taskDefRevision) detail += ` &middot; rev:${c.taskDefRevision}`;
             } else if (c.type === 'static') {
                 detail = c.lastDeploy ? `last: ${fmtDate(c.lastDeploy)}` : 'deployed';
+            } else if (c.type === 'rds') {
+                const dbSt = c.dbStatus || 'unknown';
+                const color = dbSt === 'available' ? 'var(--success)' : dbSt === 'stopped' ? 'var(--accent-light)' : 'var(--info)';
+                detail = `<span style="color:${color}">${dbSt}</span>`;
+            } else if (c.type === 'external') {
+                const prov = c.provider || 'external';
+                const provColor = prov === 'vercel' ? '#fff' : prov === 'railway' ? '#c084fc' : prov === 'supabase' ? '#3ecf8e' : 'var(--accent-light)';
+                detail = `<span style="color:${provColor};font-weight:500;text-transform:capitalize">${esc(prov)}</span>`;
+                if (c.latencyMs) detail += ` &middot; ${c.latencyMs}ms`;
+                if (c.httpStatus && c.httpStatus !== 200) detail += ` &middot; HTTP ${c.httpStatus}`;
+                if (c.publicUrl) detail += ` &middot; <a href="${esc(c.publicUrl)}" target="_blank" style="color:var(--info);text-decoration:none;font-size:0.75rem">open</a>`;
+                if (c.note) detail += ` &middot; <span style="color:var(--accent-light);font-style:italic">${esc(c.note)}</span>`;
+            } else if (c.type === 'placeholder') {
+                detail = `<span style="color:var(--accent-light);font-style:italic">${esc(c.note || 'coming soon')}</span>`;
             } else {
                 detail = 'managed';
             }
@@ -346,8 +425,8 @@ function renderAll() {
         card.innerHTML = `
             <div class="card-top">
                 <div class="card-top-left">
-                    <div class="project-name">${esc(p.name)}</div>
-                    <div class="project-desc">${esc(p.description || '')}</div>
+                    <div class="project-name">${esc(p.name)} <span class="env-badge ${esc(p.env || '')}">${esc(p.env || '')}</span></div>
+                    <div class="project-desc">${esc(p.description || '')}${p.stack ? ` <span style="color:var(--accent-light);font-size:0.75rem">&middot; ${esc(p.stack)}</span>` : ''}</div>
                 </div>
                 ${badge(p.status)}
             </div>
@@ -378,13 +457,36 @@ function renderAll() {
                     ${hasEcs ? `
                     <div class="detail-actions">
                         <button class="pause-btn ${allPaused ? 'resume' : ''}" data-project="${p.id}" data-action="${allPaused ? 'resume' : 'pause'}" onclick="event.stopPropagation(); handlePause(this)">
-                            ${allPaused
-                                ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Resume All Services'
-                                : '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause All Services'}
+                            ${(() => {
+                                const hasRds = (p.components || []).some(c => c.type === 'rds');
+                                const suffix = hasRds ? ' + DB' : '';
+                                return allPaused
+                                    ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Resume All' + suffix
+                                    : '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause All' + suffix;
+                            })()}
                         </button>
                     </div>` : ''}
                 </div>
             </div>`;
+        card.setAttribute('draggable', 'true');
+        card.dataset.projectId = p.id;
+        card.addEventListener('dragstart', e => { dragSrcId = p.id; card.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
+        card.addEventListener('dragend', () => { card.classList.remove('dragging'); dragSrcId = null; grid.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')); });
+        card.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; card.classList.add('drag-over'); });
+        card.addEventListener('dragleave', () => { card.classList.remove('drag-over'); });
+        card.addEventListener('drop', e => {
+            e.preventDefault(); card.classList.remove('drag-over');
+            if (!dragSrcId || dragSrcId === p.id) return;
+            const cards = [...grid.querySelectorAll('.project-card')];
+            const newOrder = cards.map(c => c.dataset.projectId);
+            const fromIdx = newOrder.indexOf(dragSrcId);
+            const toIdx = newOrder.indexOf(p.id);
+            if (fromIdx === -1 || toIdx === -1) return;
+            newOrder.splice(fromIdx, 1);
+            newOrder.splice(toIdx, 0, dragSrcId);
+            localStorage.setItem('geos_card_order', JSON.stringify(newOrder));
+            renderAll();
+        });
         card.addEventListener('click', e => { if (e.target.closest('.pause-btn')) return; expandedId = expandedId === p.id ? null : p.id; renderAll(); });
         grid.appendChild(card);
     });

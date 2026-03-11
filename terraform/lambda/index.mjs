@@ -1,26 +1,48 @@
-import { ECSClient, DescribeServicesCommand, UpdateServiceCommand } from "@aws-sdk/client-ecs";
-import { CloudWatchLogsClient, FilterLogEventsCommand } from "@aws-sdk/client-cloudwatch-logs";
+import { ECSClient, DescribeServicesCommand, UpdateServiceCommand, DescribeTaskDefinitionCommand } from "@aws-sdk/client-ecs";
+import { CloudWatchLogsClient, FilterLogEventsCommand, PutLogEventsCommand, CreateLogStreamCommand } from "@aws-sdk/client-cloudwatch-logs";
 import { CostExplorerClient, GetCostAndUsageCommand } from "@aws-sdk/client-cost-explorer";
-import { CloudFrontClient, GetDistributionCommand } from "@aws-sdk/client-cloudfront";
-import { S3Client, HeadBucketCommand } from "@aws-sdk/client-s3";
+import { CloudFrontClient, GetDistributionCommand, ListInvalidationsCommand } from "@aws-sdk/client-cloudfront";
+import { S3Client, HeadBucketCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import { ECRClient, DescribeImagesCommand } from "@aws-sdk/client-ecr";
+import { RDSClient, StopDBInstanceCommand, StartDBInstanceCommand, DescribeDBInstancesCommand } from "@aws-sdk/client-rds";
 
 const ecs = new ECSClient({ region: "us-east-1" });
 const cwLogs = new CloudWatchLogsClient({ region: "us-east-1" });
 const ce = new CostExplorerClient({ region: "us-east-1" });
 const cf = new CloudFrontClient({ region: "us-east-1" });
 const s3 = new S3Client({ region: "us-east-1" });
+const ecr = new ECRClient({ region: "us-east-1" });
+const rds = new RDSClient({ region: "us-east-1" });
 
 // ── Project definitions (grouped) ──
 // Each project contains multiple components: api, frontend, db, infra
+// type "external" = health-checked via HTTP (Railway, Vercel, Supabase)
 const PROJECTS = [
+  // ── LeadBridge Production (Vercel + Railway + Supabase) ──
   {
-    id: "leadbridge",
+    id: "leadbridge-prod",
     name: "LeadBridge",
+    env: "production",
+    stack: "Vercel + Railway + Supabase",
     description: "Lead management platform",
     components: [
-      { id: "api", label: "API", type: "ecs", cluster: "leadbridge-prod-cluster", service: "leadbridge-prod-backend", logGroup: "/ecs/leadbridge-prod" },
+      { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://www.leadbridge360.com", publicUrl: "https://www.leadbridge360.com", ghRepo: "goscha01/geos-leadbridge", ghBranch: "main" },
+      { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://thumbtack-bridge-production.up.railway.app/api/health", publicUrl: "https://thumbtack-bridge-production.up.railway.app", ghRepo: "goscha01/geos-leadbridge", ghBranch: "main" },
+      { id: "db", label: "Database", type: "external", provider: "supabase", healthUrl: "https://eeeipuztpbubslsxcpew.supabase.co/rest/v1/", publicUrl: "https://supabase.com/dashboard", note: "Supabase hosted PostgreSQL" },
+    ],
+    costServices: [],
+  },
+  // ── LeadBridge Staging (AWS) ──
+  {
+    id: "leadbridge-staging",
+    name: "LeadBridge",
+    env: "staging",
+    stack: "AWS",
+    description: "Lead management platform",
+    components: [
+      { id: "api", label: "API", type: "ecs", cluster: "leadbridge-prod-cluster", service: "leadbridge-prod-backend", logGroup: "/ecs/leadbridge-prod", ecrRepo: "leadbridge-prod-backend", ghRepo: "goscha01/geos-leadbridge", ghBranch: "staging" },
       { id: "frontend", label: "Frontend", type: "static", bucket: "leadbridge-prod-frontend", cloudfrontId: "E36POMA3LQY9BG" },
-      { id: "db", label: "Database", type: "managed", awsService: "Amazon Relational Database Service" },
+      { id: "db", label: "Database", type: "rds", rdsInstance: "leadbridge-prod-db", awsService: "Amazon Relational Database Service" },
       { id: "infra", label: "Infrastructure", type: "managed", awsServices: ["Amazon Elastic Load Balancing", "Amazon Virtual Private Cloud", "AWS WAF", "AWS Secrets Manager"] },
     ],
     costServices: [
@@ -34,29 +56,53 @@ const PROJECTS = [
       "Amazon CloudFront",
     ],
   },
+  // ── Sigcore Production (Railway + Supabase) ──
   {
-    id: "sigcore",
+    id: "sigcore-prod",
     name: "Sigcore",
+    env: "production",
+    stack: "Railway + Supabase",
     description: "Telephony middleware (SMS, calls)",
     components: [
-      { id: "api", label: "API", type: "ecs", cluster: "sigcore-prod-cluster", service: "sigcore-prod-backend", logGroup: "/ecs/sigcore-prod" },
+      { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://sigcore-production.up.railway.app/health", publicUrl: "https://sigcore-production.up.railway.app", ghRepo: "goscha01/Sigcore", ghBranch: "main" },
+      { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://sigcore-eight.vercel.app", publicUrl: "https://sigcore-eight.vercel.app", ghRepo: "goscha01/Sigcore", ghBranch: "staging" },
+      { id: "db", label: "Database", type: "external", provider: "supabase", healthUrl: "https://eeeipuztpbubslsxcpew.supabase.co/rest/v1/", publicUrl: "https://supabase.com/dashboard", note: "Supabase hosted PostgreSQL (shared)" },
+    ],
+    costServices: [],
+  },
+  // ── Sigcore Staging (AWS) ──
+  {
+    id: "sigcore-staging",
+    name: "Sigcore",
+    env: "staging",
+    stack: "AWS",
+    description: "Telephony middleware (SMS, calls)",
+    components: [
+      { id: "api", label: "API", type: "ecs", cluster: "sigcore-prod-cluster", service: "sigcore-prod-backend", logGroup: "/ecs/sigcore-prod", ecrRepo: "sigcore-prod-backend", ghRepo: "goscha01/Sigcore", ghBranch: "main" },
+      { id: "db", label: "Database", type: "rds", rdsInstance: "sigcore-prod-db", awsService: "Amazon Relational Database Service" },
       { id: "infra", label: "Infrastructure", type: "managed", awsServices: ["EC2 - Other"] },
     ],
-    costServices: ["Amazon Elastic Container Service", "EC2 - Other"],
+    costServices: ["Amazon Elastic Container Service", "Amazon Relational Database Service", "EC2 - Other"],
   },
   {
     id: "checkcapture",
     name: "CheckCapture",
+    env: "production",
     description: "Check processing & verification",
     components: [
-      { id: "api", label: "API", type: "ecs", cluster: "checkcapture-prod-cluster", service: "checkcapture-prod-backend", logGroup: "/ecs/checkcapture-prod" },
-      { id: "infra", label: "Infrastructure", type: "managed", awsServices: [] },
+      { id: "api", label: "API", type: "ecs", cluster: "checkcapture-prod-cluster", service: "checkcapture-prod-backend", logGroup: "/ecs/checkcapture-prod", ecrRepo: "checkcapture-prod-backend", ghRepo: "goscha01/CheckCapture", ghBranch: "main" },
+      { id: "frontend", label: "Admin Panel", type: "static", bucket: "checkcapture-prod-admin-dashboard" },
+      { id: "mobile-ios", label: "iOS App", type: "placeholder", note: "Not yet published to App Store" },
+      { id: "mobile-android", label: "Android App", type: "placeholder", note: "Not yet published to Play Store" },
+      { id: "db", label: "Database", type: "rds", rdsInstance: "checkcapture-prod-db", awsService: "Amazon Relational Database Service" },
+      { id: "infra", label: "Infrastructure", type: "managed", awsServices: ["Amazon Elastic Load Balancing"] },
     ],
-    costServices: ["Amazon Elastic Container Service"],
+    costServices: ["Amazon Elastic Container Service", "Amazon Relational Database Service", "Amazon Elastic Load Balancing"],
   },
   {
     id: "geos-landing",
     name: "Geos Website",
+    env: "production",
     description: "Company landing page & admin",
     components: [
       { id: "frontend", label: "Frontend", type: "static", bucket: "www.geos-ai.com", cloudfrontId: "E2C37J0OR4UFLY" },
@@ -75,30 +121,63 @@ async function getEcsHealth(cluster, service) {
 
     const running = svc.runningCount || 0;
     const desired = svc.desiredCount || 0;
-    const dep = svc.deployments?.[0];
+    const deployments = svc.deployments || [];
+    const primary = deployments.find(d => d.status === "PRIMARY") || deployments[0];
+
+    // A rolling update is genuinely active when there are multiple deployments
+    // (old DRAINING + new PRIMARY). A single deployment with IN_PROGRESS but
+    // running >= desired is just ECS being slow to mark rollout as COMPLETED.
+    const hasActiveRollout = deployments.length > 1;
+    const anyFailed = deployments.some(d => d.rolloutState === "FAILED");
+    const primaryRunning = primary?.runningCount ?? running;
+    const primaryDesired = primary?.desiredCount ?? desired;
+    const primaryStable = primaryRunning >= primaryDesired && primaryDesired > 0;
 
     let status = "healthy";
     let deployStatus = "success";
     let deployProgress = 100;
 
-    if (desired === 0) status = "paused";
-    else if (running === 0) status = "down";
-    else if (running < desired) status = "degraded";
+    if (desired === 0) {
+      status = "paused";
+    } else if (running === 0) {
+      status = "down";
+    } else if (hasActiveRollout) {
+      // Multiple deployments = genuine rolling update
+      deployStatus = "in-progress";
+      deployProgress = primaryDesired > 0 ? Math.min(100, Math.round((primaryRunning / primaryDesired) * 100)) : 0;
+      status = "deploying";
+    } else if (!primaryStable && primary?.rolloutState === "IN_PROGRESS") {
+      // Single deployment but hasn't reached desired count yet
+      deployStatus = "in-progress";
+      deployProgress = primaryDesired > 0 ? Math.min(100, Math.round((primaryRunning / primaryDesired) * 100)) : 0;
+      status = "deploying";
+    } else if (running < desired) {
+      status = "degraded";
+    }
 
-    if (dep) {
-      const rollout = dep.rolloutState;
-      if (rollout === "IN_PROGRESS") {
-        deployStatus = "in-progress";
-        deployProgress = desired > 0 ? Math.min(100, Math.round((running / desired) * 100)) : 0;
-        status = "deploying";
-      } else if (rollout === "FAILED") {
-        deployStatus = "failed";
-      }
+    if (anyFailed && deployStatus !== "in-progress") {
+      deployStatus = "failed";
+    }
+
+    // Use the most recent deployment's createdAt for lastDeploy
+    const latestDep = deployments[0];
+    const taskDefArn = primary?.taskDefinition || null;
+
+    // Get task definition revision
+    let taskDefRevision = null;
+    if (taskDefArn) {
+      try {
+        const tdRes = await ecs.send(new DescribeTaskDefinitionCommand({ taskDefinition: taskDefArn }));
+        taskDefRevision = tdRes.taskDefinition?.revision || null;
+      } catch {}
     }
 
     return {
       status, running, desired, deployStatus, deployProgress,
-      lastDeploy: dep?.createdAt?.toISOString() || null,
+      lastDeploy: latestDep?.createdAt?.toISOString() || null,
+      deployStarted: primary?.createdAt?.toISOString() || null,
+      deployUpdated: primary?.updatedAt?.toISOString() || null,
+      taskDefRevision,
       paused: desired === 0,
     };
   } catch (e) {
@@ -126,10 +205,27 @@ async function getRecentErrors(logGroup) {
   }
 }
 
+async function getCommitSha(ecrRepo) {
+  if (!ecrRepo) return null;
+  try {
+    const res = await ecr.send(new DescribeImagesCommand({
+      repositoryName: ecrRepo,
+      imageIds: [{ imageTag: "latest" }],
+    }));
+    const tags = res.imageDetails?.[0]?.imageTags || [];
+    // Find the tag that looks like a commit SHA (40 hex chars, not "latest")
+    return tags.find(t => t !== "latest" && /^[0-9a-f]{7,40}$/.test(t)) || null;
+  } catch {
+    return null;
+  }
+}
+
 async function getStaticHealth(bucket, cloudfrontId) {
   let status = "healthy";
   let deployStatus = "success";
+  let deployProgress = 100;
   let lastDeploy = null;
+  let deployStarted = null;
 
   try {
     await s3.send(new HeadBucketCommand({ Bucket: bucket }));
@@ -139,15 +235,90 @@ async function getStaticHealth(bucket, cloudfrontId) {
     }
   }
 
+  // Get last modified file in S3 as the real "last deploy" time
+  try {
+    const listRes = await s3.send(new ListObjectsV2Command({ Bucket: bucket, MaxKeys: 50 }));
+    const objects = listRes.Contents || [];
+    let newest = null;
+    for (const obj of objects) {
+      if (obj.LastModified && (!newest || obj.LastModified > newest)) newest = obj.LastModified;
+    }
+    if (newest) lastDeploy = newest.toISOString();
+  } catch {}
+
   if (cloudfrontId) {
     try {
       const dist = await cf.send(new GetDistributionCommand({ Id: cloudfrontId }));
       if (dist.Distribution?.Status === "InProgress") { status = "deploying"; deployStatus = "in-progress"; }
-      lastDeploy = dist.Distribution?.LastModifiedTime?.toISOString() || null;
+    } catch {}
+
+    // Check for active CloudFront invalidations (= deploy propagation in progress)
+    try {
+      const invRes = await cf.send(new ListInvalidationsCommand({ DistributionId: cloudfrontId, MaxItems: "5" }));
+      const activeInv = (invRes.InvalidationList?.Items || []).find(i => i.Status === "InProgress");
+      if (activeInv && deployStatus !== "failed") {
+        status = "deploying";
+        deployStatus = "in-progress";
+        deployProgress = 50; // Invalidation doesn't report %, show partial
+        deployStarted = activeInv.CreateTime?.toISOString() || null;
+      }
     } catch {}
   }
 
-  return { status, deployStatus, deployProgress: 100, lastDeploy, paused: false };
+  return { status, deployStatus, deployProgress, lastDeploy, deployStarted, paused: false };
+}
+
+async function getRdsHealth(rdsInstance) {
+  try {
+    const res = await rds.send(new DescribeDBInstancesCommand({ DBInstanceIdentifier: rdsInstance }));
+    const db = res.DBInstances?.[0];
+    if (!db) return { status: "down", paused: false };
+    const dbStatus = db.DBInstanceStatus; // "available", "stopped", "stopping", "starting", etc.
+    if (dbStatus === "available") return { status: "healthy", paused: false, dbStatus };
+    if (dbStatus === "stopped") return { status: "paused", paused: true, dbStatus };
+    if (dbStatus === "stopping" || dbStatus === "starting") return { status: "deploying", paused: false, dbStatus };
+    return { status: "degraded", paused: false, dbStatus };
+  } catch (e) {
+    console.error(`RDS error ${rdsInstance}:`, e.message);
+    return { status: "down", paused: false };
+  }
+}
+
+async function getExternalHealth(healthUrl, provider) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const start = Date.now();
+    const res = await fetch(healthUrl, {
+      method: "GET",
+      signal: controller.signal,
+      headers: { "User-Agent": "geos-admin-dashboard/1.0" },
+    });
+    clearTimeout(timeout);
+    const latencyMs = Date.now() - start;
+    // 401/403 from Supabase REST API means the endpoint is reachable (auth required)
+    // Vercel SPAs may return 404 at root — any non-5xx means the server is up
+    const ok = res.status >= 200 && res.status < 400;
+    const reachable = ok
+      || (provider === "supabase" && (res.status === 401 || res.status === 403))
+      || (provider === "vercel" && res.status < 500);
+    return {
+      status: reachable ? "healthy" : "degraded",
+      httpStatus: res.status,
+      latencyMs,
+      provider,
+      paused: false,
+    };
+  } catch (e) {
+    return {
+      status: "down",
+      httpStatus: 0,
+      latencyMs: 0,
+      provider,
+      paused: false,
+      error: e.message,
+    };
+  }
 }
 
 async function getMonthlyCost() {
@@ -180,6 +351,26 @@ async function getMonthlyCost() {
   } catch (e) {
     console.error("Cost error:", e.message);
     return { total: 0, breakdown: {}, dayOfMonth: 1, daysInMonth: 30 };
+  }
+}
+
+// ── Log to service log group (shows up in Grafana Loki) ──
+
+async function logToService(logGroup, message) {
+  const streamName = `geos-admin/${new Date().toISOString().split("T")[0]}`;
+  try {
+    await cwLogs.send(new CreateLogStreamCommand({ logGroupName: logGroup, logStreamName: streamName }));
+  } catch (e) {
+    if (e.name !== "ResourceAlreadyExistsException") console.error("CreateLogStream error:", e.message);
+  }
+  try {
+    await cwLogs.send(new PutLogEventsCommand({
+      logGroupName: logGroup,
+      logStreamName: streamName,
+      logEvents: [{ timestamp: Date.now(), message: typeof message === "string" ? message : JSON.stringify(message) }],
+    }));
+  } catch (e) {
+    console.error("PutLogEvents error:", e.message);
   }
 }
 
@@ -219,12 +410,40 @@ export async function handler(event) {
       const proj = PROJECTS.find(p => p.id === projectId);
       if (!proj) return { statusCode: 404, headers, body: JSON.stringify({ error: "Project not found" }) };
 
+      let affected = 0;
+
+      // Pause/resume ECS services
       const ecsComponents = proj.components.filter(c => c.type === "ecs");
       for (const comp of ecsComponents) {
+        const logMsg = JSON.stringify({ event: "service_action", action, projectId, project: proj.name, cluster: comp.cluster, service: comp.service, desiredCount: action === "pause" ? 0 : 1, source: "geos-admin-dashboard" });
+        console.log(logMsg);
         await setEcsDesiredCount(comp.cluster, comp.service, action === "pause" ? 0 : 1);
+        if (comp.logGroup) await logToService(comp.logGroup, logMsg);
+        affected++;
       }
 
-      return { statusCode: 200, headers, body: JSON.stringify({ ok: true, projectId, action, affected: ecsComponents.length }) };
+      // Stop/start RDS instances
+      const rdsComponents = proj.components.filter(c => c.type === "rds" && c.rdsInstance);
+      for (const comp of rdsComponents) {
+        const logMsg = JSON.stringify({ event: "rds_action", action, projectId, project: proj.name, rdsInstance: comp.rdsInstance, source: "geos-admin-dashboard" });
+        console.log(logMsg);
+        try {
+          if (action === "pause") {
+            await rds.send(new StopDBInstanceCommand({ DBInstanceIdentifier: comp.rdsInstance }));
+          } else {
+            await rds.send(new StartDBInstanceCommand({ DBInstanceIdentifier: comp.rdsInstance }));
+          }
+          affected++;
+        } catch (e) {
+          // RDS may already be in the target state
+          console.log(`RDS ${action} ${comp.rdsInstance}: ${e.message}`);
+        }
+        // Log to ECS log group if available
+        const ecsComp = ecsComponents[0];
+        if (ecsComp?.logGroup) await logToService(ecsComp.logGroup, logMsg);
+      }
+
+      return { statusCode: 200, headers, body: JSON.stringify({ ok: true, projectId, action, affected }) };
     } catch (e) {
       return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
     }
@@ -239,16 +458,25 @@ export async function handler(event) {
       // Resolve each component in parallel
       const componentResults = await Promise.all(proj.components.map(async (comp) => {
         if (comp.type === "ecs") {
-          const [health, errors] = await Promise.all([
+          const [health, errors, commitSha] = await Promise.all([
             getEcsHealth(comp.cluster, comp.service),
             getRecentErrors(comp.logGroup),
+            getCommitSha(comp.ecrRepo),
           ]);
-          return { ...comp, ...health, errors24h: errors.length, recentErrors: errors };
+          return { ...comp, ...health, commitSha, errors24h: errors.length, recentErrors: errors };
         } else if (comp.type === "static") {
           const health = await getStaticHealth(comp.bucket, comp.cloudfrontId);
           return { ...comp, ...health, errors24h: 0, recentErrors: [] };
+        } else if (comp.type === "rds") {
+          const health = await getRdsHealth(comp.rdsInstance);
+          return { ...comp, ...health, errors24h: 0, recentErrors: [] };
+        } else if (comp.type === "external") {
+          const health = await getExternalHealth(comp.healthUrl, comp.provider);
+          return { ...comp, ...health, errors24h: 0, recentErrors: [], publicUrl: comp.publicUrl, note: comp.note };
+        } else if (comp.type === "placeholder") {
+          return { ...comp, status: "paused", errors24h: 0, recentErrors: [], note: comp.note };
         } else {
-          // managed (db, infra) — always healthy if the parent ECS is running
+          // managed (infra) — always healthy
           return { ...comp, status: "healthy", errors24h: 0, recentErrors: [] };
         }
       }));
@@ -261,7 +489,7 @@ export async function handler(event) {
         projectCostMtd += amt;
         // Map to component
         for (const comp of proj.components) {
-          if (comp.type === "managed" && comp.awsService === svcName) {
+          if ((comp.type === "managed" || comp.type === "rds") && comp.awsService === svcName) {
             componentCosts[comp.id] = (componentCosts[comp.id] || 0) + amt;
           } else if (comp.type === "managed" && comp.awsServices?.includes(svcName)) {
             componentCosts[comp.id] = (componentCosts[comp.id] || 0) + amt;
@@ -294,18 +522,27 @@ export async function handler(event) {
         : 0;
 
       // Overall project status: worst of all components
-      const statuses = componentResults.map(c => c.status);
+      // Managed/placeholder/static components are neutral for pause detection —
+      // only ECS/RDS/external (actual services) determine if the project is "paused".
+      const activeComps = componentResults.filter(c => c.type === "ecs" || c.type === "static" || c.type === "rds" || c.type === "external");
+      const statuses = activeComps.length > 0 ? activeComps.map(c => c.status) : componentResults.map(c => c.status);
+      // Service components (ECS + RDS + external) — if all are paused, project is paused
+      // even if static buckets or managed infra are still "healthy"
+      const serviceComps = componentResults.filter(c => c.type === "ecs" || c.type === "rds" || c.type === "external");
+      const serviceStatuses = serviceComps.map(c => c.status);
       let projectStatus = "healthy";
-      if (statuses.includes("down")) projectStatus = "down";
+      if (serviceStatuses.length > 0 && serviceStatuses.every(s => s === "paused")) projectStatus = "paused";
+      else if (statuses.includes("down")) projectStatus = "down";
       else if (statuses.includes("degraded")) projectStatus = "degraded";
       else if (statuses.includes("deploying")) projectStatus = "deploying";
-      else if (statuses.every(s => s === "paused")) projectStatus = "paused";
 
       const totalErrors = componentResults.reduce((n, c) => n + (c.errors24h || 0), 0);
 
       return {
         id: proj.id,
         name: proj.name,
+        env: proj.env,
+        stack: proj.stack,
         description: proj.description,
         status: projectStatus,
         costMtd: projectCostMtd,
@@ -324,7 +561,19 @@ export async function handler(event) {
           deployStatus: c.deployStatus,
           deployProgress: c.deployProgress,
           lastDeploy: c.lastDeploy,
+          deployStarted: c.deployStarted,
+          deployUpdated: c.deployUpdated,
+          taskDefRevision: c.taskDefRevision,
+          commitSha: c.commitSha,
+          ghRepo: c.ghRepo,
+          ghBranch: c.ghBranch,
           paused: c.paused,
+          dbStatus: c.dbStatus,
+          note: c.note,
+          provider: c.provider,
+          publicUrl: c.publicUrl,
+          httpStatus: c.httpStatus,
+          latencyMs: c.latencyMs,
         })),
       };
     }));

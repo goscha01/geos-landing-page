@@ -34,6 +34,7 @@ resource "aws_iam_role_policy" "admin_lambda" {
           "ecs:DescribeClusters",
           "ecs:ListServices",
           "ecs:UpdateService",
+          "ecs:DescribeTaskDefinition",
         ]
         Resource = "*"
       },
@@ -57,13 +58,29 @@ resource "aws_iam_role_policy" "admin_lambda" {
       {
         Sid    = "CloudFront"
         Effect = "Allow"
-        Action = ["cloudfront:GetDistribution"]
+        Action = ["cloudfront:GetDistribution", "cloudfront:ListInvalidations"]
         Resource = "*"
       },
       {
         Sid    = "S3Read"
         Effect = "Allow"
-        Action = ["s3:HeadBucket", "s3:ListBucket"]
+        Action = ["s3:HeadBucket", "s3:ListBucket", "s3:GetObject", "s3:ListObjects"]
+        Resource = "*"
+      },
+      {
+        Sid    = "ECR"
+        Effect = "Allow"
+        Action = ["ecr:DescribeImages"]
+        Resource = "*"
+      },
+      {
+        Sid    = "RDS"
+        Effect = "Allow"
+        Action = [
+          "rds:DescribeDBInstances",
+          "rds:StopDBInstance",
+          "rds:StartDBInstance",
+        ]
         Resource = "*"
       },
     ]
