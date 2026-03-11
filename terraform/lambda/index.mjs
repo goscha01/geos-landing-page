@@ -102,6 +102,16 @@ const PROJECTS = [
     costServices: ["Amazon Elastic Container Service", "Amazon Relational Database Service", "Amazon Elastic Load Balancing"],
   },
   {
+    id: "spotless-homes",
+    name: "Spotless Homes",
+    env: "production",
+    description: "Cleaning service website",
+    components: [
+      { id: "frontend", label: "Frontend", type: "static", bucket: "www.spotless.homes" },
+    ],
+    costServices: [],
+  },
+  {
     id: "geos-landing",
     name: "Geos Website",
     env: "production",
