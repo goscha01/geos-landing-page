@@ -19,6 +19,13 @@ provider "aws" {
   region = "us-east-1"
 }
 
+variable "github_token" {
+  description = "GitHub PAT for reading commit info from private repos"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
 # ── Import existing resources (already created manually) ──
 
 # S3 bucket — already exists, just import it

@@ -5,6 +5,7 @@ import { CloudFrontClient, GetDistributionCommand, ListInvalidationsCommand } fr
 import { S3Client, HeadBucketCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { ECRClient, DescribeImagesCommand } from "@aws-sdk/client-ecr";
 import { RDSClient, StopDBInstanceCommand, StartDBInstanceCommand, DescribeDBInstancesCommand } from "@aws-sdk/client-rds";
+import { ElasticLoadBalancingV2Client, DeleteLoadBalancerCommand, DescribeLoadBalancersCommand } from "@aws-sdk/client-elastic-load-balancing-v2";
 
 const ecs = new ECSClient({ region: "us-east-1" });
 const cwLogs = new CloudWatchLogsClient({ region: "us-east-1" });
@@ -13,6 +14,7 @@ const cf = new CloudFrontClient({ region: "us-east-1" });
 const s3 = new S3Client({ region: "us-east-1" });
 const ecr = new ECRClient({ region: "us-east-1" });
 const rds = new RDSClient({ region: "us-east-1" });
+const elbv2 = new ElasticLoadBalancingV2Client({ region: "us-east-1" });
 
 // ── Project definitions (grouped) ──
 // Each project contains multiple components: api, frontend, db, infra
@@ -95,7 +97,7 @@ const PROJECTS = [
       { id: "mobile-ios", label: "iOS App", type: "placeholder", note: "Not yet published to App Store" },
       { id: "mobile-android", label: "Android App", type: "placeholder", note: "Not yet published to Play Store" },
       { id: "db", label: "Database", type: "rds", rdsInstance: "checkcapture-prod-db", awsService: "Amazon Relational Database Service" },
-      { id: "infra", label: "Infrastructure", type: "managed", awsServices: ["Amazon Elastic Load Balancing"] },
+      { id: "infra", label: "Infrastructure", type: "managed", awsServices: ["Amazon Elastic Load Balancing"], albName: "checkcapture-prod-alb" },
     ],
     costServices: ["Amazon Elastic Container Service", "Amazon Relational Database Service", "Amazon Elastic Load Balancing"],
   },
@@ -284,6 +286,32 @@ async function getRdsHealth(rdsInstance) {
   }
 }
 
+async function getGitHubLatestCommit(ghRepo, ghBranch) {
+  if (!ghRepo) return null;
+  try {
+    const branch = ghBranch || "main";
+    const ghToken = process.env.GITHUB_TOKEN || "";
+    const headers = { "User-Agent": "geos-admin-dashboard/1.0", Accept: "application/vnd.github.v3+json" };
+    if (ghToken) headers.Authorization = `Bearer ${ghToken}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(`https://api.github.com/repos/${ghRepo}/commits/${branch}`, {
+      headers,
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return {
+      commitSha: data.sha || null,
+      lastDeploy: data.commit?.committer?.date || data.commit?.author?.date || null,
+      commitMessage: (data.commit?.message || "").split("\n")[0].substring(0, 80),
+    };
+  } catch {
+    return null;
+  }
+}
+
 async function getExternalHealth(healthUrl, provider) {
   try {
     const controller = new AbortController();
@@ -443,7 +471,35 @@ export async function handler(event) {
         if (ecsComp?.logGroup) await logToService(ecsComp.logGroup, logMsg);
       }
 
-      return { statusCode: 200, headers, body: JSON.stringify({ ok: true, projectId, action, affected }) };
+      // Delete/recreate ALBs (managed components with albName)
+      const albComponents = proj.components.filter(c => c.albName);
+      for (const comp of albComponents) {
+        const logMsg = JSON.stringify({ event: "alb_action", action, projectId, project: proj.name, albName: comp.albName, source: "geos-admin-dashboard" });
+        console.log(logMsg);
+        try {
+          if (action === "pause") {
+            // Look up ALB ARN by name, then delete it
+            const albRes = await elbv2.send(new DescribeLoadBalancersCommand({ Names: [comp.albName] }));
+            const albArn = albRes.LoadBalancers?.[0]?.LoadBalancerArn;
+            if (albArn) {
+              await elbv2.send(new DeleteLoadBalancerCommand({ LoadBalancerArn: albArn }));
+              affected++;
+              console.log(`ALB deleted: ${comp.albName}`);
+            }
+          } else {
+            // Resume: ALB must be recreated via terraform apply
+            console.log(`ALB ${comp.albName} needs terraform apply to recreate`);
+          }
+        } catch (e) {
+          console.log(`ALB ${action} ${comp.albName}: ${e.message}`);
+        }
+        if (ecsComponents[0]?.logGroup) await logToService(ecsComponents[0].logGroup, logMsg);
+      }
+
+      const resumeNote = action === "resume" && albComponents.length > 0
+        ? " Note: ALB needs `terraform apply` to recreate."
+        : "";
+      return { statusCode: 200, headers, body: JSON.stringify({ ok: true, projectId, action, affected, note: resumeNote || undefined }) };
     } catch (e) {
       return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
     }
@@ -471,13 +527,39 @@ export async function handler(event) {
           const health = await getRdsHealth(comp.rdsInstance);
           return { ...comp, ...health, errors24h: 0, recentErrors: [] };
         } else if (comp.type === "external") {
-          const health = await getExternalHealth(comp.healthUrl, comp.provider);
-          return { ...comp, ...health, errors24h: 0, recentErrors: [], publicUrl: comp.publicUrl, note: comp.note };
+          const [health, ghInfo] = await Promise.all([
+            getExternalHealth(comp.healthUrl, comp.provider),
+            getGitHubLatestCommit(comp.ghRepo, comp.ghBranch),
+          ]);
+          return {
+            ...comp, ...health,
+            errors24h: 0, recentErrors: [],
+            publicUrl: comp.publicUrl, note: comp.note,
+            // Deploy info from GitHub commit history
+            deployStatus: "success", deployProgress: 100,
+            commitSha: ghInfo?.commitSha || null,
+            lastDeploy: ghInfo?.lastDeploy || null,
+            commitMessage: ghInfo?.commitMessage || null,
+          };
         } else if (comp.type === "placeholder") {
           return { ...comp, status: "paused", errors24h: 0, recentErrors: [], note: comp.note };
         } else {
-          // managed (infra) — always healthy
-          return { ...comp, status: "healthy", errors24h: 0, recentErrors: [] };
+          // managed (infra) — check ALB if configured, otherwise healthy
+          let infraStatus = "healthy";
+          let paused = false;
+          if (comp.albName) {
+            try {
+              const albRes = await elbv2.send(new DescribeLoadBalancersCommand({ Names: [comp.albName] }));
+              const alb = albRes.LoadBalancers?.[0];
+              if (!alb) { infraStatus = "paused"; paused = true; }
+            } catch (e) {
+              // ALB not found = deleted (paused)
+              if (e.name === "LoadBalancerNotFoundException" || e.message?.includes("not found")) {
+                infraStatus = "paused"; paused = true;
+              }
+            }
+          }
+          return { ...comp, status: infraStatus, paused, errors24h: 0, recentErrors: [] };
         }
       }));
 

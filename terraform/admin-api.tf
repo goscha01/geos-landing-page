@@ -83,6 +83,15 @@ resource "aws_iam_role_policy" "admin_lambda" {
         ]
         Resource = "*"
       },
+      {
+        Sid    = "ELB"
+        Effect = "Allow"
+        Action = [
+          "elasticloadbalancing:DescribeLoadBalancers",
+          "elasticloadbalancing:DeleteLoadBalancer",
+        ]
+        Resource = "*"
+      },
     ]
   })
 }
@@ -107,7 +116,8 @@ resource "aws_lambda_function" "admin_api" {
 
   environment {
     variables = {
-      ADMIN_TOKEN = random_password.admin_token.result
+      ADMIN_TOKEN  = random_password.admin_token.result
+      GITHUB_TOKEN = var.github_token
     }
   }
 }
