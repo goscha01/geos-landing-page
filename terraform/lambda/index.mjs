@@ -139,7 +139,7 @@ const PROJECTS = [
     description: "Service management platform",
     railwayProjectIds: ["672437e4-9791-43c4-aa01-5181f3bd1904"],
     components: [
-      { id: "api", label: "Backend", type: "external", provider: "railway", healthUrl: "https://service-flow-backend-production.up.railway.app/health", publicUrl: "https://service-flow-backend-production.up.railway.app", ghRepo: "goscha01/service-flow", ghBranch: "main", railwayServiceId: "eed7aa3a" },
+      { id: "api", label: "Backend", type: "external", provider: "railway", healthUrl: "https://service-flow-backend-production-4568.up.railway.app/api/health", publicUrl: "https://service-flow-backend-production-4568.up.railway.app", ghRepo: "goscha01/service-flow", ghBranch: "main", railwayServiceId: "eed7aa3a" },
       { id: "frontend-backend", label: "Backend App", type: "external", provider: "vercel", healthUrl: "https://service-flow-backend.vercel.app", publicUrl: "https://service-flow-backend.vercel.app", ghRepo: "goscha01/service-flow", ghBranch: "main", vercelProjectId: "prj_DtinAaF51zBUuJ12UeyLWB5eEuth" },
       { id: "frontend", label: "Frontend App", type: "external", provider: "vercel", healthUrl: "https://service-flow.vercel.app", publicUrl: "https://service-flow.vercel.app", ghRepo: "goscha01/service-flow", ghBranch: "main", vercelProjectId: "prj_xwPakBOp87PO6Mf6hkggvF80Y31R" },
     ],
@@ -153,7 +153,7 @@ const PROJECTS = [
     stack: "Railway + Vercel",
     description: "Service management platform",
     components: [
-      { id: "api", label: "Backend", type: "external", provider: "railway", healthUrl: "https://service-flow-backend-staging.up.railway.app/health", publicUrl: "https://service-flow-backend-staging.up.railway.app", ghRepo: "goscha01/service-flow", ghBranch: "staging", railwayServiceId: "eed7aa3a" },
+      { id: "api", label: "Backend", type: "external", provider: "railway", healthUrl: "https://service-flow-backend-staging-303f.up.railway.app/api/health", publicUrl: "https://service-flow-backend-staging-303f.up.railway.app", ghRepo: "goscha01/service-flow", ghBranch: "staging", railwayServiceId: "eed7aa3a" },
     ],
     costServices: [],
   },
