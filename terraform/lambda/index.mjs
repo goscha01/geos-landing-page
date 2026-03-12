@@ -711,10 +711,6 @@ export async function handler(event) {
       }
 
       projectCostMtd = Math.round(projectCostMtd * 100) / 100;
-      // Forecast: linear projection
-      const forecast = dayOfMonth > 1
-        ? Math.round((projectCostMtd / (dayOfMonth - 1)) * daysInMonth * 100) / 100
-        : 0;
 
       // Overall project status: worst of all components
       // Managed/placeholder/static components are neutral for pause detection —
@@ -730,6 +726,13 @@ export async function handler(event) {
       else if (statuses.includes("down")) projectStatus = "down";
       else if (statuses.includes("degraded")) projectStatus = "degraded";
       else if (statuses.includes("deploying") || statuses.includes("pausing")) projectStatus = "deploying";
+
+      // Forecast: if paused, costs stop — forecast = MTD (no further spend)
+      // Otherwise, linear projection from MTD
+      const isPaused = projectStatus === "paused" || projectStatus === "pausing";
+      const forecast = isPaused
+        ? projectCostMtd
+        : (dayOfMonth > 1 ? Math.round((projectCostMtd / (dayOfMonth - 1)) * daysInMonth * 100) / 100 : 0);
 
       const totalErrors = componentResults.reduce((n, c) => n + (c.errors24h || 0), 0);
 
