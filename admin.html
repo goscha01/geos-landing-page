@@ -141,6 +141,11 @@
         .env-badge.production { background: rgba(239,68,68,0.15); color: var(--error); }
         .env-badge.staging { background: rgba(245,158,11,0.15); color: var(--warning); }
         .env-badge.development { background: rgba(59,130,246,0.15); color: var(--info); }
+        .infra-badge { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 0.58rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-left: 4px; }
+        .infra-badge.aws { background: rgba(255,153,0,0.15); color: #f59e0b; }
+        .infra-badge.railway { background: rgba(139,92,246,0.15); color: #a78bfa; }
+        .infra-badge.vercel { background: rgba(250,250,250,0.12); color: #d4d4d8; }
+        .infra-badge.mixed { background: rgba(139,92,246,0.12); color: #a78bfa; }
         .card-deploy-bar { width: 100%; height: 4px; background: var(--bg-secondary); border-radius: 2px; overflow: hidden; }
         .card-deploy-fill { height: 100%; border-radius: 2px; transition: width 0.6s; }
         .card-deploy-fill.success { background: var(--success); }
@@ -283,6 +288,7 @@ function statusLabel(s) { return { healthy:'Healthy', degraded:'Degraded', down:
 function $(s) { return s === 0 ? 'Free' : '$' + s.toFixed(2); }
 function fmtDate(d) { if (!d) return '-'; const dt = new Date(d); return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' ' + dt.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}); }
 function badge(st) { return `<span class="status-badge ${st}"><span class="dot"></span>${statusLabel(st)}</span>`; }
+function inferInfraClass(stack) { if (!stack) return ''; const s = stack.toLowerCase(); if (s === 'aws') return 'aws'; if (s.includes('railway') && s.includes('vercel')) return 'mixed'; if (s.includes('railway')) return 'railway'; if (s.includes('vercel')) return 'vercel'; return 'mixed'; }
 
 function fmtElapsed(startIso) {
     if (!startIso) return '';
@@ -425,8 +431,8 @@ function renderAll() {
         card.innerHTML = `
             <div class="card-top">
                 <div class="card-top-left">
-                    <div class="project-name">${esc(p.name)} <span class="env-badge ${esc(p.env || '')}">${esc(p.env || '')}</span></div>
-                    <div class="project-desc">${esc(p.description || '')}${p.stack ? ` <span style="color:var(--accent-light);font-size:0.75rem">&middot; ${esc(p.stack)}</span>` : ''}</div>
+                    <div class="project-name">${esc(p.name)} <span class="env-badge ${esc(p.env || '')}">${esc(p.env || '')}</span>${p.stack ? ` <span class="infra-badge ${inferInfraClass(p.stack)}">${esc(p.stack)}</span>` : ''}</div>
+                    <div class="project-desc">${esc(p.description || '')}</div>
                 </div>
                 ${badge(p.status)}
             </div>

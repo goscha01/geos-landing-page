@@ -90,6 +90,7 @@ const PROJECTS = [
     id: "checkcapture",
     name: "CheckCapture",
     env: "production",
+    stack: "AWS",
     description: "Check processing & verification",
     components: [
       { id: "api", label: "API", type: "ecs", cluster: "checkcapture-prod-cluster", service: "checkcapture-prod-backend", logGroup: "/ecs/checkcapture-prod", ecrRepo: "checkcapture-prod-backend", ghRepo: "goscha01/CheckCapture", ghBranch: "main" },
@@ -105,6 +106,7 @@ const PROJECTS = [
     id: "spotless-homes",
     name: "Spotless Homes",
     env: "production",
+    stack: "AWS",
     description: "Cleaning service website",
     components: [
       { id: "frontend", label: "Frontend", type: "static", bucket: "www.spotless.homes" },
@@ -115,6 +117,7 @@ const PROJECTS = [
     id: "geos-landing",
     name: "Geos Website",
     env: "production",
+    stack: "AWS",
     description: "Company landing page & admin",
     components: [
       { id: "frontend", label: "Frontend", type: "static", bucket: "www.geos-ai.com", cloudfrontId: "E2C37J0OR4UFLY" },
@@ -209,6 +212,18 @@ const PROJECTS = [
     components: [
       { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://steadfast-blessing-production.up.railway.app/health", publicUrl: "https://steadfast-blessing-production.up.railway.app", ghRepo: "goscha01/ProofPix", ghBranch: "main", railwayServiceId: "24d5af31" },
       { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://proofpix.vercel.app", publicUrl: "https://proofpix.vercel.app", ghRepo: "goscha01/ProofPix", ghBranch: "main", vercelProjectId: "prj_8NB7Gmr7fXhqiyV9G7UI5ylC4rkP" },
+    ],
+    costServices: [],
+  },
+  // ── StampMaker (AWS S3 + CloudFront, us-east-2) ──
+  {
+    id: "stampmaker",
+    name: "StampMaker",
+    env: "production",
+    stack: "AWS",
+    description: "Custom stamp creator",
+    components: [
+      { id: "frontend", label: "Frontend", type: "static", bucket: "mystampmaker.com", cloudfrontId: "E75NWUXVORIHR", s3Region: "us-east-2" },
     ],
     costServices: [],
   },
@@ -323,15 +338,17 @@ async function getCommitSha(ecrRepo) {
   }
 }
 
-async function getStaticHealth(bucket, cloudfrontId) {
+async function getStaticHealth(bucket, cloudfrontId, s3Region) {
   let status = "healthy";
   let deployStatus = "success";
   let deployProgress = 100;
   let lastDeploy = null;
   let deployStarted = null;
 
+  const s3Client = s3Region ? new S3Client({ region: s3Region }) : s3;
+
   try {
-    await s3.send(new HeadBucketCommand({ Bucket: bucket }));
+    await s3Client.send(new HeadBucketCommand({ Bucket: bucket }));
   } catch (e) {
     if (e.name === "NotFound" || e.$metadata?.httpStatusCode === 404) {
       status = "down"; deployStatus = "failed";
@@ -340,7 +357,7 @@ async function getStaticHealth(bucket, cloudfrontId) {
 
   // Get last modified file in S3 as the real "last deploy" time
   try {
-    const listRes = await s3.send(new ListObjectsV2Command({ Bucket: bucket, MaxKeys: 50 }));
+    const listRes = await s3Client.send(new ListObjectsV2Command({ Bucket: bucket, MaxKeys: 50 }));
     const objects = listRes.Contents || [];
     let newest = null;
     for (const obj of objects) {
@@ -696,7 +713,7 @@ export async function handler(event) {
           ]);
           return { ...comp, ...health, commitSha, errors24h: errors.length, recentErrors: errors };
         } else if (comp.type === "static") {
-          const health = await getStaticHealth(comp.bucket, comp.cloudfrontId);
+          const health = await getStaticHealth(comp.bucket, comp.cloudfrontId, comp.s3Region);
           return { ...comp, ...health, errors24h: 0, recentErrors: [] };
         } else if (comp.type === "rds") {
           const health = await getRdsHealth(comp.rdsInstance);
