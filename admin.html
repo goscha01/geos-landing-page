@@ -153,6 +153,15 @@
         .card-deploy-fill.failed { background: var(--error); }
         @keyframes bar-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
 
+        /* Filter bar */
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+        .filter-group { display: flex; gap: 4px; }
+        .filter-group-label { font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; align-self: center; margin-right: 4px; }
+        .filter-chip { padding: 5px 12px; border-radius: 100px; font-size: 0.75rem; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); transition: all 0.2s; white-space: nowrap; }
+        .filter-chip:hover { border-color: var(--accent-light); color: var(--text-primary); }
+        .filter-chip.active { background: rgba(250,250,250,0.08); border-color: var(--accent-light); color: var(--text-primary); }
+        .filter-sep { width: 1px; background: var(--border); margin: 0 6px; align-self: stretch; }
+
         /* Responsive */
         @media (max-width: 1200px) { .projects-grid { grid-template-columns: repeat(2, 1fr); } .summary-row { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 700px) { .projects-grid { grid-template-columns: 1fr; } .summary-row { grid-template-columns: 1fr 1fr; } .topbar { padding: 14px 16px; } .summary-row, .projects-section { padding-left: 16px; padding-right: 16px; } .comp-row { grid-template-columns: 80px 60px 1fr 50px; } }
@@ -217,6 +226,7 @@
                 Refresh
             </button>
         </div>
+        <div class="filter-bar" id="filterBar"></div>
         <div class="projects-grid" id="projectsGrid"></div>
     </div>
 </div>
@@ -230,6 +240,7 @@ const ADMIN_PASS = 'geos2026';
 let projects = [];
 let costInfo = {};
 let expandedId = null;
+let filters = { infra: 'all', status: 'all', env: 'all' };
 
 // Auth
 function checkSession() { return sessionStorage.getItem('geos_admin') === 'true'; }
@@ -343,8 +354,81 @@ function deployBarHtml(proj) {
     </div>`;
 }
 
+function inferInfraKey(stack) {
+    if (!stack) return 'other';
+    const s = stack.toLowerCase();
+    if (s === 'aws') return 'aws';
+    if (s.includes('railway') && s.includes('vercel')) return 'railway+vercel';
+    if (s.includes('railway') && s.includes('supabase')) return 'railway';
+    if (s.includes('railway')) return 'railway';
+    if (s.includes('vercel')) return 'vercel';
+    return 'other';
+}
+
+function renderFilters() {
+    const bar = document.getElementById('filterBar');
+    // Derive unique values from current projects
+    const infraSet = new Set(projects.map(p => inferInfraKey(p.stack)));
+    const envSet = new Set(projects.map(p => p.env || 'unknown'));
+    const statusSet = new Set(projects.map(p => {
+        const s = p.status;
+        return s === 'paused' ? 'paused' : (s === 'down' || s === 'degraded') ? s : 'active';
+    }));
+
+    function chip(group, value, label, isActive) {
+        return `<button class="filter-chip ${isActive ? 'active' : ''}" data-group="${group}" data-value="${value}">${label}</button>`;
+    }
+
+    let html = '';
+    // Infra filter
+    html += '<span class="filter-group-label">Infra</span><div class="filter-group">';
+    html += chip('infra', 'all', 'All', filters.infra === 'all');
+    for (const k of ['aws', 'railway', 'vercel', 'railway+vercel']) {
+        if (infraSet.has(k)) html += chip('infra', k, k === 'railway+vercel' ? 'Railway + Vercel' : k.charAt(0).toUpperCase() + k.slice(1), filters.infra === k);
+    }
+    html += '</div><div class="filter-sep"></div>';
+
+    // Status filter
+    html += '<span class="filter-group-label">Status</span><div class="filter-group">';
+    html += chip('status', 'all', 'All', filters.status === 'all');
+    if (statusSet.has('active')) html += chip('status', 'active', 'Active', filters.status === 'active');
+    if (statusSet.has('paused')) html += chip('status', 'paused', 'Paused', filters.status === 'paused');
+    if (statusSet.has('down')) html += chip('status', 'down', 'Down', filters.status === 'down');
+    if (statusSet.has('degraded')) html += chip('status', 'degraded', 'Degraded', filters.status === 'degraded');
+    html += '</div><div class="filter-sep"></div>';
+
+    // Env filter
+    html += '<span class="filter-group-label">Env</span><div class="filter-group">';
+    html += chip('env', 'all', 'All', filters.env === 'all');
+    for (const e of ['production', 'staging']) {
+        if (envSet.has(e)) html += chip('env', e, e.charAt(0).toUpperCase() + e.slice(1), filters.env === e);
+    }
+    html += '</div>';
+
+    bar.innerHTML = html;
+    bar.querySelectorAll('.filter-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+            filters[btn.dataset.group] = btn.dataset.value;
+            renderFilters();
+            renderGrid();
+        });
+    });
+}
+
+function matchesFilters(p) {
+    if (filters.infra !== 'all' && inferInfraKey(p.stack) !== filters.infra) return false;
+    if (filters.env !== 'all' && p.env !== filters.env) return false;
+    if (filters.status !== 'all') {
+        const s = p.status;
+        const mapped = s === 'paused' ? 'paused' : (s === 'down' ? 'down' : s === 'degraded' ? 'degraded' : 'active');
+        if (mapped !== filters.status) return false;
+    }
+    return true;
+}
+
 function renderAll() {
-    // Summary
+    renderFilters();
+    // Summary — count all projects (unfiltered)
     const total = projects.length;
     const healthy = projects.filter(p => p.status === 'healthy').length;
     const errors = projects.reduce((n, p) => n + (p.errors24h || 0), 0);
@@ -355,9 +439,14 @@ function renderAll() {
     document.getElementById('sumCostDays').textContent = costInfo.dayOfMonth ? `day ${costInfo.dayOfMonth} of ${costInfo.daysInMonth}` : '';
     document.getElementById('sumForecast').textContent = costInfo.forecast != null ? $(costInfo.forecast) : '-';
 
-    // Projects — apply saved sort order
+    renderGrid();
+}
+
+function renderGrid() {
+    // Projects — apply saved sort order and filters
     const savedOrder = JSON.parse(localStorage.getItem('geos_card_order') || '[]');
-    const sorted = [...projects].sort((a, b) => {
+    const filtered = projects.filter(p => matchesFilters(p));
+    const sorted = [...filtered].sort((a, b) => {
         const ai = savedOrder.indexOf(a.id), bi = savedOrder.indexOf(b.id);
         if (ai === -1 && bi === -1) return 0;
         if (ai === -1) return 1;
