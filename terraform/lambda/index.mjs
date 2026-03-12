@@ -27,6 +27,7 @@ const PROJECTS = [
     env: "production",
     stack: "Vercel + Railway + Supabase",
     description: "Lead management platform",
+    railwayProjectIds: ["af5d4f09-6bb6-49c6-ae0c-cf72fda35c88"],
     components: [
       { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://www.leadbridge360.com", publicUrl: "https://www.leadbridge360.com", ghRepo: "goscha01/geos-leadbridge", ghBranch: "main", vercelProjectId: "prj_KtaLcKdg5Mo5K8zzNtsC9CpN5ifp" },
       { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://thumbtack-bridge-production.up.railway.app/api/health", publicUrl: "https://thumbtack-bridge-production.up.railway.app", ghRepo: "goscha01/geos-leadbridge", ghBranch: "main", railwayServiceId: "d59d2d4c-816a-4639-9687-8e0ec7b487cf" },
@@ -65,6 +66,7 @@ const PROJECTS = [
     env: "production",
     stack: "Railway + Supabase",
     description: "Telephony middleware (SMS, calls)",
+    railwayProjectIds: ["4666ac31-3351-4b69-86f6-3db893b44693"],
     components: [
       { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://sigcore-production.up.railway.app/health", publicUrl: "https://sigcore-production.up.railway.app", ghRepo: "goscha01/Sigcore", ghBranch: "main", railwayServiceId: "e4e089c0-2652-4130-a2f8-ac61a55eef3c" },
       { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://sigcore-eight.vercel.app", publicUrl: "https://sigcore-eight.vercel.app", ghRepo: "goscha01/Sigcore", ghBranch: "staging", vercelProjectId: "prj_jd69vnwStaMniisy1eGy93NcnrjU" },
@@ -131,6 +133,7 @@ const PROJECTS = [
     env: "production",
     stack: "Railway + Vercel",
     description: "AI calling platform",
+    railwayProjectIds: ["624b00a0-ebc8-41c7-b963-2cf2df83a2da", "4182e0f1-ccd1-43b7-83a2-ee57c91d674f"],
     components: [
       { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://callio-production-47ac.up.railway.app/health", publicUrl: "https://callio-production-47ac.up.railway.app", ghRepo: "goscha01/Callio", ghBranch: "main", railwayServiceId: "d18a3449" },
       { id: "whatsapp", label: "WhatsApp", type: "external", provider: "railway", healthUrl: "https://callio-production-8d5a.up.railway.app/health", publicUrl: "https://callio-production-8d5a.up.railway.app", ghRepo: "goscha01/Callio", ghBranch: "main", railwayServiceId: "0e7fa346" },
@@ -145,6 +148,7 @@ const PROJECTS = [
     env: "production",
     stack: "Railway + Vercel",
     description: "Service management platform",
+    railwayProjectIds: ["672437e4-9791-43c4-aa01-5181f3bd1904"],
     components: [
       { id: "api", label: "Backend", type: "external", provider: "railway", healthUrl: "https://service-flow-backend-production.up.railway.app/health", publicUrl: "https://service-flow-backend-production.up.railway.app", ghRepo: "goscha01/service-flow", ghBranch: "main", railwayServiceId: "eed7aa3a" },
       { id: "frontend-backend", label: "Backend App", type: "external", provider: "vercel", healthUrl: "https://service-flow-backend.vercel.app", publicUrl: "https://service-flow-backend.vercel.app", ghRepo: "goscha01/service-flow", ghBranch: "main", vercelProjectId: "prj_DtinAaF51zBUuJ12UeyLWB5eEuth" },
@@ -159,6 +163,7 @@ const PROJECTS = [
     env: "production",
     stack: "Railway + Vercel",
     description: "Social media posting tool",
+    railwayProjectIds: ["774da08a-3338-4022-99a3-d6098e7116b6"],
     components: [
       { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://self-post-production.up.railway.app/health", publicUrl: "https://self-post-production.up.railway.app", ghRepo: "goscha01/post-to", ghBranch: "main", railwayServiceId: "22c9c38b" },
       { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://post-to.vercel.app", publicUrl: "https://post-to.vercel.app", ghRepo: "goscha01/post-to", ghBranch: "main", vercelProjectId: "prj_fqyPfZfqkA7kJXzuKX9iGJub2lDu" },
@@ -184,6 +189,7 @@ const PROJECTS = [
     env: "production",
     stack: "Railway",
     description: "Centralized logging service",
+    railwayProjectIds: ["a2f37247-7b55-471f-95a1-4bed9bb5f253"],
     components: [
       { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://geosloghub-production.up.railway.app/health", publicUrl: "https://geosloghub-production.up.railway.app", ghRepo: "goscha01/geos-loghub", ghBranch: "main", railwayServiceId: "39863ac2" },
     ],
@@ -196,6 +202,7 @@ const PROJECTS = [
     env: "production",
     stack: "Railway + Vercel",
     description: "AI website builder",
+    railwayProjectIds: ["51f078ac-22fd-44c9-9f3f-66e75e3f186e"],
     components: [
       { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://alexmessenger-production.up.railway.app/health", publicUrl: "https://alexmessenger-production.up.railway.app", ghRepo: "goscha01/AlexMessenger", ghBranch: "main", railwayServiceId: "487c47bc" },
       { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://alexmessenger.vercel.app", publicUrl: "https://alexmessenger.vercel.app", ghRepo: "goscha01/AlexMessenger", ghBranch: "main", vercelProjectId: "prj_9zgtUMw5GmEjRqOtDWaKujPsbXSm" },
@@ -209,6 +216,7 @@ const PROJECTS = [
     env: "production",
     stack: "Railway + Vercel",
     description: "Photo proof & verification",
+    railwayProjectIds: ["63bb9905-02ad-438c-b7c0-67a9a660bf28"],
     components: [
       { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://steadfast-blessing-production.up.railway.app/health", publicUrl: "https://steadfast-blessing-production.up.railway.app", ghRepo: "goscha01/ProofPix", ghBranch: "main", railwayServiceId: "24d5af31" },
       { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://proofpix.vercel.app", publicUrl: "https://proofpix.vercel.app", ghRepo: "goscha01/ProofPix", ghBranch: "main", vercelProjectId: "prj_8NB7Gmr7fXhqiyV9G7UI5ylC4rkP" },
@@ -504,6 +512,42 @@ async function getVercelDeployStatus(projectId) {
   }
 }
 
+// ── Railway per-project costs ──
+// Returns { [railwayProjectId]: costInDollars }
+async function getRailwayCosts() {
+  const token = process.env.RAILWAY_TOKEN;
+  if (!token) return {};
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch("https://backboard.railway.com/graphql/v2", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+      signal: controller.signal,
+      body: JSON.stringify({
+        query: `{ estimatedUsage(measurements: [CPU_USAGE, MEMORY_USAGE_GB, NETWORK_TX_GB, DISK_USAGE_GB]) { estimatedValue measurement projectId } }`,
+      }),
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return {};
+    const data = await res.json();
+    const usage = data?.data?.estimatedUsage || [];
+    // Railway pricing (Pro): CPU $0.000463/vCPU-min, Mem $0.000231/GB-min, Net $0.10/GB, Disk $0.000309/GB-min
+    const prices = { CPU_USAGE: 0.000463, MEMORY_USAGE_GB: 0.000231, NETWORK_TX_GB: 0.10, DISK_USAGE_GB: 0.000309 };
+    const costs = {};
+    for (const u of usage) {
+      const price = prices[u.measurement] || 0;
+      costs[u.projectId] = (costs[u.projectId] || 0) + u.estimatedValue * price;
+    }
+    // Round
+    for (const k of Object.keys(costs)) costs[k] = Math.round(costs[k] * 100) / 100;
+    return costs;
+  } catch (e) {
+    console.error("Railway costs error:", e.message);
+    return {};
+  }
+}
+
 async function getExternalHealth(healthUrl, provider) {
   try {
     const controller = new AbortController();
@@ -699,8 +743,9 @@ export async function handler(event) {
 
   // GET / — dashboard data
   try {
-    const costData = await getMonthlyCost();
+    const [costData, railwayCosts] = await Promise.all([getMonthlyCost(), getRailwayCosts()]);
     const { dayOfMonth, daysInMonth } = costData;
+    const railwayTotal = Object.values(railwayCosts).reduce((s, v) => s + v, 0);
 
     const projectResults = await Promise.all(PROJECTS.map(async (proj) => {
       // Resolve each component in parallel
@@ -818,6 +863,16 @@ export async function handler(event) {
         for (const sc of staticComps) { componentCosts[sc.id] = Math.round(share * 100) / 100; }
       }
 
+      // Add Railway costs for projects with railwayProjectIds
+      if (proj.railwayProjectIds?.length) {
+        let rwCost = 0;
+        for (const rpId of proj.railwayProjectIds) rwCost += railwayCosts[rpId] || 0;
+        projectCostMtd += rwCost;
+        // Assign Railway cost to the first railway-provider component (or api)
+        const rwComp = proj.components.find(c => c.provider === "railway") || proj.components[0];
+        if (rwComp) componentCosts[rwComp.id] = (componentCosts[rwComp.id] || 0) + Math.round(rwCost * 100) / 100;
+      }
+
       projectCostMtd = Math.round(projectCostMtd * 100) / 100;
 
       // Overall project status: worst of all components
@@ -884,16 +939,16 @@ export async function handler(event) {
       };
     }));
 
-    const totalCost = Math.round(costData.total * 100) / 100;
+    const totalCost = Math.round((costData.total + railwayTotal) * 100) / 100;
     const totalForecast = dayOfMonth > 1
-      ? Math.round((costData.total / (dayOfMonth - 1)) * daysInMonth * 100) / 100
+      ? Math.round(((costData.total + railwayTotal) / (dayOfMonth - 1)) * daysInMonth * 100) / 100
       : 0;
 
     return {
       statusCode: 200, headers,
       body: JSON.stringify({
         projects: projectResults,
-        cost: { total: totalCost, forecast: totalForecast, breakdown: costData.breakdown, dayOfMonth, daysInMonth },
+        cost: { total: totalCost, forecast: totalForecast, breakdown: { ...costData.breakdown, Railway: Math.round(railwayTotal * 100) / 100 }, dayOfMonth, daysInMonth },
         timestamp: new Date().toISOString(),
       }),
     };
