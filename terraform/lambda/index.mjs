@@ -35,29 +35,18 @@ const PROJECTS = [
     ],
     costServices: [],
   },
-  // ── LeadBridge Staging (AWS) ──
+  // ── LeadBridge Staging (Railway) ──
   {
     id: "leadbridge-staging",
     name: "LeadBridge",
     env: "staging",
-    stack: "AWS",
+    stack: "Railway",
     description: "Lead management platform",
     components: [
-      { id: "api", label: "API", type: "ecs", cluster: "leadbridge-prod-cluster", service: "leadbridge-prod-backend", logGroup: "/ecs/leadbridge-prod", ecrRepo: "leadbridge-prod-backend", ghRepo: "goscha01/geos-leadbridge", ghBranch: "staging" },
-      { id: "frontend", label: "Frontend", type: "static", bucket: "leadbridge-prod-frontend", cloudfrontId: "E36POMA3LQY9BG" },
-      { id: "db", label: "Database", type: "rds", rdsInstance: "leadbridge-prod-db", awsService: "Amazon Relational Database Service" },
-      { id: "infra", label: "Infrastructure", type: "managed", awsServices: ["Amazon Elastic Load Balancing", "Amazon Virtual Private Cloud", "AWS WAF", "AWS Secrets Manager"] },
+      { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://thumbtack-bridge-staging.up.railway.app/api/health", publicUrl: "https://thumbtack-bridge-staging.up.railway.app", ghRepo: "goscha01/geos-leadbridge", ghBranch: "staging", railwayServiceId: "d59d2d4c-816a-4639-9687-8e0ec7b487cf" },
+      { id: "db", label: "Database", type: "external", provider: "supabase", healthUrl: "https://eeeipuztpbubslsxcpew.supabase.co/rest/v1/", publicUrl: "https://supabase.com/dashboard", note: "Supabase hosted PostgreSQL (shared with prod)" },
     ],
-    costServices: [
-      "Amazon Elastic Container Service",
-      "Amazon Relational Database Service",
-      "Amazon Elastic Load Balancing",
-      "Amazon Virtual Private Cloud",
-      "AWS WAF",
-      "AWS Secrets Manager",
-      "Amazon Simple Storage Service",
-      "Amazon CloudFront",
-    ],
+    costServices: [],
   },
   // ── Sigcore Production (Railway + Supabase) ──
   {
@@ -74,19 +63,19 @@ const PROJECTS = [
     ],
     costServices: [],
   },
-  // ── Sigcore Staging (AWS) ──
+  // ── Sigcore Staging (Railway) ──
   {
     id: "sigcore-staging",
     name: "Sigcore",
     env: "staging",
-    stack: "AWS",
+    stack: "Railway",
     description: "Telephony middleware (SMS, calls)",
     components: [
-      { id: "api", label: "API", type: "ecs", cluster: "sigcore-prod-cluster", service: "sigcore-prod-backend", logGroup: "/ecs/sigcore-prod", ecrRepo: "sigcore-prod-backend", ghRepo: "goscha01/Sigcore", ghBranch: "main" },
-      { id: "db", label: "Database", type: "rds", rdsInstance: "sigcore-prod-db", awsService: "Amazon Relational Database Service" },
-      { id: "infra", label: "Infrastructure", type: "managed", awsServices: ["EC2 - Other"] },
+      { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://sigcore-staging.up.railway.app/health", publicUrl: "https://sigcore-staging.up.railway.app", ghRepo: "goscha01/Sigcore", ghBranch: "staging", railwayServiceId: "e4e089c0-2652-4130-a2f8-ac61a55eef3c" },
+      { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://sigcore-eight.vercel.app", publicUrl: "https://sigcore-eight.vercel.app", ghRepo: "goscha01/Sigcore", ghBranch: "staging", vercelProjectId: "prj_jd69vnwStaMniisy1eGy93NcnrjU" },
+      { id: "db", label: "Database", type: "external", provider: "supabase", healthUrl: "https://eeeipuztpbubslsxcpew.supabase.co/rest/v1/", publicUrl: "https://supabase.com/dashboard", note: "Supabase hosted PostgreSQL (shared with prod)" },
     ],
-    costServices: ["Amazon Elastic Container Service", "Amazon Relational Database Service", "EC2 - Other"],
+    costServices: [],
   },
   {
     id: "checkcapture",
@@ -153,6 +142,18 @@ const PROJECTS = [
       { id: "api", label: "Backend", type: "external", provider: "railway", healthUrl: "https://service-flow-backend-production.up.railway.app/health", publicUrl: "https://service-flow-backend-production.up.railway.app", ghRepo: "goscha01/service-flow", ghBranch: "main", railwayServiceId: "eed7aa3a" },
       { id: "frontend-backend", label: "Backend App", type: "external", provider: "vercel", healthUrl: "https://service-flow-backend.vercel.app", publicUrl: "https://service-flow-backend.vercel.app", ghRepo: "goscha01/service-flow", ghBranch: "main", vercelProjectId: "prj_DtinAaF51zBUuJ12UeyLWB5eEuth" },
       { id: "frontend", label: "Frontend App", type: "external", provider: "vercel", healthUrl: "https://service-flow.vercel.app", publicUrl: "https://service-flow.vercel.app", ghRepo: "goscha01/service-flow", ghBranch: "main", vercelProjectId: "prj_xwPakBOp87PO6Mf6hkggvF80Y31R" },
+    ],
+    costServices: [],
+  },
+  // ── Service Flow Staging (Railway + Vercel) ──
+  {
+    id: "serviceflow-staging",
+    name: "Service Flow",
+    env: "staging",
+    stack: "Railway + Vercel",
+    description: "Service management platform",
+    components: [
+      { id: "api", label: "Backend", type: "external", provider: "railway", healthUrl: "https://service-flow-backend-staging.up.railway.app/health", publicUrl: "https://service-flow-backend-staging.up.railway.app", ghRepo: "goscha01/service-flow", ghBranch: "staging", railwayServiceId: "eed7aa3a" },
     ],
     costServices: [],
   },
