@@ -121,6 +121,97 @@ const PROJECTS = [
     ],
     costServices: [],
   },
+  // ── Callio (Railway + Vercel) ──
+  {
+    id: "callio-prod",
+    name: "Callio",
+    env: "production",
+    stack: "Railway + Vercel",
+    description: "AI calling platform",
+    components: [
+      { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://callio-production-47ac.up.railway.app/health", publicUrl: "https://callio-production-47ac.up.railway.app", ghRepo: "goscha01/Callio", ghBranch: "main", railwayServiceId: "d18a3449" },
+      { id: "whatsapp", label: "WhatsApp", type: "external", provider: "railway", healthUrl: "https://callio-production-8d5a.up.railway.app/health", publicUrl: "https://callio-production-8d5a.up.railway.app", ghRepo: "goscha01/Callio", ghBranch: "main", railwayServiceId: "0e7fa346" },
+      { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://callio.vercel.app", publicUrl: "https://callio.vercel.app", ghRepo: "goscha01/Callio", ghBranch: "main", vercelProjectId: "prj_Vaw14xpQRRQFyBdBgd0A0VXXct5E" },
+    ],
+    costServices: [],
+  },
+  // ── Service Flow (Railway + Vercel) ──
+  {
+    id: "serviceflow-prod",
+    name: "Service Flow",
+    env: "production",
+    stack: "Railway + Vercel",
+    description: "Service management platform",
+    components: [
+      { id: "api", label: "Backend", type: "external", provider: "railway", healthUrl: "https://service-flow-backend-production.up.railway.app/health", publicUrl: "https://service-flow-backend-production.up.railway.app", ghRepo: "goscha01/service-flow", ghBranch: "main", railwayServiceId: "eed7aa3a" },
+      { id: "frontend-backend", label: "Backend App", type: "external", provider: "vercel", healthUrl: "https://service-flow-backend.vercel.app", publicUrl: "https://service-flow-backend.vercel.app", ghRepo: "goscha01/service-flow", ghBranch: "main", vercelProjectId: "prj_DtinAaF51zBUuJ12UeyLWB5eEuth" },
+      { id: "frontend", label: "Frontend App", type: "external", provider: "vercel", healthUrl: "https://service-flow.vercel.app", publicUrl: "https://service-flow.vercel.app", ghRepo: "goscha01/service-flow", ghBranch: "main", vercelProjectId: "prj_xwPakBOp87PO6Mf6hkggvF80Y31R" },
+    ],
+    costServices: [],
+  },
+  // ── Post To (Railway + Vercel) ──
+  {
+    id: "postto-prod",
+    name: "Post To",
+    env: "production",
+    stack: "Railway + Vercel",
+    description: "Social media posting tool",
+    components: [
+      { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://self-post-production.up.railway.app/health", publicUrl: "https://self-post-production.up.railway.app", ghRepo: "goscha01/post-to", ghBranch: "main", railwayServiceId: "22c9c38b" },
+      { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://post-to.vercel.app", publicUrl: "https://post-to.vercel.app", ghRepo: "goscha01/post-to", ghBranch: "main", vercelProjectId: "prj_fqyPfZfqkA7kJXzuKX9iGJub2lDu" },
+    ],
+    costServices: [],
+  },
+  // ── Trestle (Vercel only) ──
+  {
+    id: "trestle-prod",
+    name: "Trestle",
+    env: "production",
+    stack: "Vercel",
+    description: "Trestle API application",
+    components: [
+      { id: "frontend", label: "App", type: "external", provider: "vercel", healthUrl: "https://trestle-api-app.vercel.app", publicUrl: "https://trestle-api-app.vercel.app", ghRepo: "goscha01/trestle-api-app", ghBranch: "main", vercelProjectId: "prj_TQDb81B7XpgLZcDMnKc4zN9Bg5eM" },
+    ],
+    costServices: [],
+  },
+  // ── LogHub (Railway) ──
+  {
+    id: "loghub-prod",
+    name: "LogHub",
+    env: "production",
+    stack: "Railway",
+    description: "Centralized logging service",
+    components: [
+      { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://geosloghub-production.up.railway.app/health", publicUrl: "https://geosloghub-production.up.railway.app", ghRepo: "goscha01/geos-loghub", ghBranch: "main", railwayServiceId: "39863ac2" },
+    ],
+    costServices: [],
+  },
+  // ── SiteForge / AlexMessenger (Railway + Vercel) ──
+  {
+    id: "siteforge-prod",
+    name: "SiteForge",
+    env: "production",
+    stack: "Railway + Vercel",
+    description: "AI website builder",
+    components: [
+      { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://alexmessenger-production.up.railway.app/health", publicUrl: "https://alexmessenger-production.up.railway.app", ghRepo: "goscha01/AlexMessenger", ghBranch: "main", railwayServiceId: "487c47bc" },
+      { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://alexmessenger.vercel.app", publicUrl: "https://alexmessenger.vercel.app", ghRepo: "goscha01/AlexMessenger", ghBranch: "main", vercelProjectId: "prj_9zgtUMw5GmEjRqOtDWaKujPsbXSm" },
+    ],
+    costServices: [],
+  },
+  // ── ProofPix (Railway + Vercel) ──
+  {
+    id: "proofpix-prod",
+    name: "ProofPix",
+    env: "production",
+    stack: "Railway + Vercel",
+    description: "Photo proof & verification",
+    components: [
+      { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://steadfast-blessing-production.up.railway.app/health", publicUrl: "https://steadfast-blessing-production.up.railway.app", ghRepo: "goscha01/ProofPix", ghBranch: "main", railwayServiceId: "24d5af31" },
+      { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://proofpix.vercel.app", publicUrl: "https://proofpix.vercel.app", ghRepo: "goscha01/ProofPix", ghBranch: "main", vercelProjectId: "prj_8NB7Gmr7fXhqiyV9G7UI5ylC4rkP" },
+    ],
+    costServices: [],
+  },
 ];
 
 // ── Health checks ──
