@@ -28,8 +28,8 @@ const PROJECTS = [
     stack: "Vercel + Railway + Supabase",
     description: "Lead management platform",
     components: [
-      { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://www.leadbridge360.com", publicUrl: "https://www.leadbridge360.com", ghRepo: "goscha01/geos-leadbridge", ghBranch: "main" },
-      { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://thumbtack-bridge-production.up.railway.app/api/health", publicUrl: "https://thumbtack-bridge-production.up.railway.app", ghRepo: "goscha01/geos-leadbridge", ghBranch: "main" },
+      { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://www.leadbridge360.com", publicUrl: "https://www.leadbridge360.com", ghRepo: "goscha01/geos-leadbridge", ghBranch: "main", vercelProjectId: "prj_KtaLcKdg5Mo5K8zzNtsC9CpN5ifp" },
+      { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://thumbtack-bridge-production.up.railway.app/api/health", publicUrl: "https://thumbtack-bridge-production.up.railway.app", ghRepo: "goscha01/geos-leadbridge", ghBranch: "main", railwayServiceId: "d59d2d4c-816a-4639-9687-8e0ec7b487cf" },
       { id: "db", label: "Database", type: "external", provider: "supabase", healthUrl: "https://eeeipuztpbubslsxcpew.supabase.co/rest/v1/", publicUrl: "https://supabase.com/dashboard", note: "Supabase hosted PostgreSQL" },
     ],
     costServices: [],
@@ -66,8 +66,8 @@ const PROJECTS = [
     stack: "Railway + Supabase",
     description: "Telephony middleware (SMS, calls)",
     components: [
-      { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://sigcore-production.up.railway.app/health", publicUrl: "https://sigcore-production.up.railway.app", ghRepo: "goscha01/Sigcore", ghBranch: "main" },
-      { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://sigcore-eight.vercel.app", publicUrl: "https://sigcore-eight.vercel.app", ghRepo: "goscha01/Sigcore", ghBranch: "staging" },
+      { id: "api", label: "API", type: "external", provider: "railway", healthUrl: "https://sigcore-production.up.railway.app/health", publicUrl: "https://sigcore-production.up.railway.app", ghRepo: "goscha01/Sigcore", ghBranch: "main", railwayServiceId: "e4e089c0-2652-4130-a2f8-ac61a55eef3c" },
+      { id: "frontend", label: "Frontend", type: "external", provider: "vercel", healthUrl: "https://sigcore-eight.vercel.app", publicUrl: "https://sigcore-eight.vercel.app", ghRepo: "goscha01/Sigcore", ghBranch: "staging", vercelProjectId: "prj_jd69vnwStaMniisy1eGy93NcnrjU" },
       { id: "db", label: "Database", type: "external", provider: "supabase", healthUrl: "https://eeeipuztpbubslsxcpew.supabase.co/rest/v1/", publicUrl: "https://supabase.com/dashboard", note: "Supabase hosted PostgreSQL (shared)" },
     ],
     costServices: [],
@@ -323,6 +323,79 @@ async function getGitHubLatestCommit(ghRepo, ghBranch) {
   }
 }
 
+// ── Railway deployment status ──
+
+async function getRailwayDeployStatus(serviceId) {
+  const token = process.env.RAILWAY_TOKEN;
+  if (!token || !serviceId) return null;
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch("https://backboard.railway.com/graphql/v2", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+      signal: controller.signal,
+      body: JSON.stringify({
+        query: `{ service(id: "${serviceId}") { deployments(first: 1) { edges { node { id status createdAt } } } } }`,
+      }),
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const dep = data?.data?.service?.deployments?.edges?.[0]?.node;
+    if (!dep) return null;
+    // Map Railway statuses to our status model
+    const statusMap = {
+      SUCCESS: "success", BUILDING: "building", DEPLOYING: "deploying",
+      FAILED: "failed", CRASHED: "failed", SLEEPING: "sleeping",
+      QUEUED: "queued", INITIALIZING: "building", WAITING: "queued",
+      NEEDS_APPROVAL: "queued", REMOVING: "deploying", REMOVED: "success",
+    };
+    return {
+      deployStatus: statusMap[dep.status] || "unknown",
+      railwayStatus: dep.status,
+      lastDeploy: dep.createdAt,
+      deployId: dep.id,
+    };
+  } catch (e) {
+    console.error(`Railway error ${serviceId}:`, e.message);
+    return null;
+  }
+}
+
+// ── Vercel deployment status ──
+
+async function getVercelDeployStatus(projectId) {
+  const token = process.env.VERCEL_TOKEN;
+  if (!token || !projectId) return null;
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(`https://api.vercel.com/v6/deployments?projectId=${projectId}&target=production&limit=1`, {
+      headers: { "Authorization": `Bearer ${token}` },
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const dep = data?.deployments?.[0];
+    if (!dep) return null;
+    const statusMap = {
+      READY: "success", BUILDING: "building", INITIALIZING: "building",
+      QUEUED: "queued", ERROR: "failed", CANCELED: "failed",
+    };
+    return {
+      deployStatus: statusMap[dep.state] || "unknown",
+      vercelState: dep.state,
+      lastDeploy: dep.created ? new Date(dep.created).toISOString() : null,
+      readyAt: dep.ready ? new Date(dep.ready).toISOString() : null,
+    };
+  } catch (e) {
+    console.error(`Vercel error ${projectId}:`, e.message);
+    return null;
+  }
+}
+
 async function getExternalHealth(healthUrl, provider) {
   try {
     const controller = new AbortController();
@@ -538,19 +611,48 @@ export async function handler(event) {
           const health = await getRdsHealth(comp.rdsInstance);
           return { ...comp, ...health, errors24h: 0, recentErrors: [] };
         } else if (comp.type === "external") {
-          const [health, ghInfo] = await Promise.all([
+          const queries = [
             getExternalHealth(comp.healthUrl, comp.provider),
             getGitHubLatestCommit(comp.ghRepo, comp.ghBranch),
-          ]);
+          ];
+          // Fetch real deploy status from Railway or Vercel
+          if (comp.railwayServiceId) queries.push(getRailwayDeployStatus(comp.railwayServiceId));
+          else if (comp.vercelProjectId) queries.push(getVercelDeployStatus(comp.vercelProjectId));
+          else queries.push(Promise.resolve(null));
+
+          const [health, ghInfo, platformDeploy] = await Promise.all(queries);
+
+          // Prefer platform deploy info (Railway/Vercel) over GitHub commit date
+          let deployStatus = "success";
+          let deployProgress = 100;
+          let lastDeploy = ghInfo?.lastDeploy || null;
+          let status = health.status;
+
+          if (platformDeploy) {
+            lastDeploy = platformDeploy.readyAt || platformDeploy.lastDeploy || lastDeploy;
+            const ps = platformDeploy.deployStatus;
+            if (ps === "building" || ps === "deploying" || ps === "queued") {
+              deployStatus = "in-progress";
+              deployProgress = ps === "building" ? 50 : ps === "deploying" ? 80 : 10;
+              status = "deploying";
+            } else if (ps === "failed") {
+              deployStatus = "failed";
+              deployProgress = 100;
+            } else if (ps === "sleeping") {
+              status = "paused";
+            }
+          }
+
           return {
-            ...comp, ...health,
+            ...comp, ...health, status,
             errors24h: 0, recentErrors: [],
             publicUrl: comp.publicUrl, note: comp.note,
-            // Deploy info from GitHub commit history
-            deployStatus: "success", deployProgress: 100,
+            deployStatus, deployProgress,
             commitSha: ghInfo?.commitSha || null,
-            lastDeploy: ghInfo?.lastDeploy || null,
+            lastDeploy,
             commitMessage: ghInfo?.commitMessage || null,
+            railwayStatus: platformDeploy?.railwayStatus || null,
+            vercelState: platformDeploy?.vercelState || null,
           };
         } else if (comp.type === "placeholder") {
           return { ...comp, status: "paused", errors24h: 0, recentErrors: [], note: comp.note };
