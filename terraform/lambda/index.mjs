@@ -288,7 +288,8 @@ async function getRdsHealth(rdsInstance) {
     const dbStatus = db.DBInstanceStatus; // "available", "stopped", "stopping", "starting", etc.
     if (dbStatus === "available") return { status: "healthy", paused: false, dbStatus };
     if (dbStatus === "stopped") return { status: "paused", paused: true, dbStatus };
-    if (dbStatus === "stopping" || dbStatus === "starting") return { status: "deploying", paused: false, dbStatus };
+    if (dbStatus === "stopping") return { status: "pausing", paused: false, dbStatus };
+    if (dbStatus === "starting") return { status: "deploying", paused: false, dbStatus };
     return { status: "degraded", paused: false, dbStatus };
   } catch (e) {
     console.error(`RDS error ${rdsInstance}:`, e.message);
@@ -623,10 +624,10 @@ export async function handler(event) {
       const serviceComps = componentResults.filter(c => c.type === "ecs" || c.type === "rds" || c.type === "external");
       const serviceStatuses = serviceComps.map(c => c.status);
       let projectStatus = "healthy";
-      if (serviceStatuses.length > 0 && serviceStatuses.every(s => s === "paused")) projectStatus = "paused";
+      if (serviceStatuses.length > 0 && serviceStatuses.every(s => s === "paused" || s === "pausing")) projectStatus = serviceStatuses.some(s => s === "pausing") ? "pausing" : "paused";
       else if (statuses.includes("down")) projectStatus = "down";
       else if (statuses.includes("degraded")) projectStatus = "degraded";
-      else if (statuses.includes("deploying")) projectStatus = "deploying";
+      else if (statuses.includes("deploying") || statuses.includes("pausing")) projectStatus = "deploying";
 
       const totalErrors = componentResults.reduce((n, c) => n + (c.errors24h || 0), 0);
 
